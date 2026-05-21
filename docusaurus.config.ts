@@ -67,12 +67,26 @@ const config: Config = {
         height: 32,
       },
       items: [
+        // "DOCS" mono pill — sits right of the logo
         {
-          type: 'docSidebar',
-          sidebarId: 'docsSidebar',
+          type: 'html',
           position: 'left',
-          label: 'Documentation',
+          value: '<span class="navbar-docs-tag">DOCS</span>',
         },
+        // Centred search bar
+        {
+          type: 'html',
+          position: 'left',
+          className: 'navbar-search-outer',
+          value: '<div class="navbar-search-bar" role="button" tabindex="0" aria-label="Search documentation"><svg class="search-glass" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="search-ph">Search documentation</span><span class="search-kbd"><kbd>⌘</kbd><kbd>K</kbd></span></div>',
+        },
+        // v3.2 version pill (right)
+        {
+          type: 'html',
+          position: 'right',
+          value: '<div class="navbar-version-pill"><span class="navbar-vdot"></span><span>v3.2</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--alto-ink-400)"><path d="m6 9 6 6 6-6"/></svg></div>',
+        },
+        // altomotors.in link (right)
         {
           type: 'html',
           position: 'right',

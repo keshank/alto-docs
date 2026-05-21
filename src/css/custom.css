@@ -160,20 +160,177 @@ div[class*='announcementBar'] {
 /* ============================================================
    NAVBAR
    ============================================================ */
+
+/* ---- Base shell ---- */
 .navbar {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   padding: 0 24px;
+  height: 64px;
   border-bottom: 1px solid var(--alto-border);
 }
-.navbar__logo { height: 32px; width: auto; }
-.navbar__brand { margin-right: 24px; }
+.navbar__inner { height: 100%; }
+.navbar__logo  { height: 32px; width: auto; }
+.navbar__brand { margin-right: 16px; gap: 0; }
+
+/* ---- Left items grow to allow search centering ---- */
+.navbar__items.navbar__items--left {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ---- "DOCS" mono pill ---- */
+.navbar-docs-tag {
+  font-family: var(--ifm-font-family-monospace);
+  font-weight: 500;
+  font-size: 10.5px;
+  color: var(--alto-ink-700);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  padding: 3px 8px;
+  background: var(--alto-paper-2);
+  border-radius: var(--alto-r-sm);
+  display: inline-block;
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+[data-theme='dark'] .navbar-docs-tag {
+  background: var(--alto-paper-2);
+  color: var(--alto-ink-700);
+}
+
+/* ---- Centred search bar ---- */
+/* The <li> wrapper */
+.navbar-search-outer {
+  flex: 1;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+/* The visible pill */
+.navbar-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 40px;
+  padding: 0 8px 0 14px;
+  border: 1px solid var(--alto-border);
+  border-radius: var(--alto-r-md);
+  background: var(--alto-paper);
+  width: 360px;
+  max-width: 360px;
+  color: var(--alto-ink-500);
+  font-size: 14px;
+  cursor: text;
+  transition: border-color .15s, background .15s, box-shadow .15s;
+  flex-shrink: 0;
+}
+.navbar-search-bar:hover {
+  background: #fff;
+  border-color: var(--alto-border-2);
+}
+.search-glass {
+  color: var(--alto-ink-400);
+  flex-shrink: 0;
+  display: block;
+}
+.search-ph {
+  flex: 1;
+  min-width: 0;
+  color: var(--alto-ink-400);
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.search-kbd {
+  display: inline-flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.search-kbd kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  background: #fff;
+  border: 1px solid var(--alto-border);
+  border-bottom-width: 1.5px;
+  border-radius: 5px;
+  color: var(--alto-ink-500);
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+}
+[data-theme='dark'] .navbar-search-bar { background: var(--alto-paper); }
+[data-theme='dark'] .navbar-search-bar:hover { background: var(--alto-paper-2); }
+[data-theme='dark'] .search-kbd kbd {
+  background: var(--alto-paper-2);
+  border-color: var(--alto-border-2);
+  color: var(--alto-ink-700);
+}
+
+/* ---- Version pill ---- */
+.navbar-version-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  background: var(--alto-paper);
+  border: 1px solid var(--alto-border);
+  border-radius: var(--alto-r-pill);
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--alto-ink-700);
+  letter-spacing: 0.02em;
+  cursor: default;
+  flex-shrink: 0;
+  user-select: none;
+}
+.navbar-version-pill:hover { border-color: var(--alto-border-2); color: var(--alto-ink-900); }
+.navbar-vdot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--alto-accent);
+  flex-shrink: 0;
+}
+[data-theme='dark'] .navbar-version-pill { background: var(--alto-paper); }
+
+/* ---- Theme toggle: match design's 36×36 bordered square ---- */
+.navbar__items--right .clean-btn {
+  width: 36px !important;
+  height: 36px !important;
+  border: 1px solid var(--alto-border) !important;
+  background: var(--alto-paper) !important;
+  border-radius: var(--alto-r-md) !important;
+  color: var(--alto-ink-700) !important;
+  display: grid !important;
+  place-items: center;
+  transition: color .15s, border-color .15s;
+  flex-shrink: 0;
+  padding: 0 !important;
+}
+.navbar__items--right .clean-btn:hover {
+  color: var(--alto-accent) !important;
+  border-color: var(--alto-accent) !important;
+}
+
+/* ---- altomotors.in link ---- */
 .navbar-site-link {
   font-size: 13px;
   color: var(--alto-ink-500) !important;
   padding: 6px 12px;
 }
 .navbar-site-link:hover { color: var(--alto-accent) !important; }
+
+/* ---- Generic link styles (still needed for any future nav links) ---- */
 .navbar__link {
   font-weight: 500;
   font-size: 14px;
@@ -181,6 +338,13 @@ div[class*='announcementBar'] {
   transition: color .15s;
 }
 .navbar__link:hover, .navbar__link--active { color: var(--alto-accent); }
+
+/* ---- Responsive: collapse search + version on narrow screens ---- */
+@media (max-width: 996px) {
+  .navbar-search-outer  { display: none !important; }
+  .navbar-version-pill  { display: none !important; }
+  .navbar-docs-tag      { display: none !important; }
+}
 
 /* ============================================================
    SIDEBAR
