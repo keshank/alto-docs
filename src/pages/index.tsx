@@ -235,33 +235,27 @@ function FooterBrand() {
     <div style={{
       background: 'var(--alto-paper)',
       borderTop: '1px solid var(--alto-border)',
-      padding: '32px 48px',
+      padding: '24px 48px',
     }}>
       <div style={{
         maxWidth: 1100,
         margin: '0 auto',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
         gap: 20,
+        flexWrap: 'wrap',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
-          <span className="alto-stamp">
-            <span className="dot" />
-            All systems operational
-          </span>
-          <div className="alto-social">
-            <a href="https://linkedin.com/company/altomotors" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-              <LinkedinIcon />
-            </a>
-            <a href="https://youtube.com/@altomotors" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
-              <YoutubeIcon />
-            </a>
-          </div>
-        </div>
-        <div style={{ fontSize: 12.5, color: 'var(--alto-ink-400)' }}>
-          © {new Date().getFullYear()} Alto Motors Pvt. Ltd. · Bengaluru, India
+        <span className="alto-stamp">
+          <span className="dot" />
+          All systems operational
+        </span>
+        <div className="alto-social">
+          <a href="https://linkedin.com/company/altomotors" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <LinkedinIcon />
+          </a>
+          <a href="https://youtube.com/@altomotors" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+            <YoutubeIcon />
+          </a>
         </div>
       </div>
     </div>
