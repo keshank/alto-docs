@@ -303,24 +303,26 @@ div[class*='searchHintContainer'] {
   gap: 4px !important;
 }
 
-/* Each kbd badge — qualified with `kbd` so it doesn't also match the container */
+/* Each kbd badge — subtle hint inside the pill, not a button-looking attachment.
+   Background matches pill, no heavy border, just a soft outline. */
 kbd[class*='searchHint'] {
   display: inline-grid !important;
   place-items: center !important;
-  min-width: 22px !important;
-  height: 22px !important;
-  padding: 0 5px !important;
-  background-color: var(--ifm-background-color) !important;
+  min-width: 20px !important;
+  height: 20px !important;
+  padding: 0 4px !important;
+  background-color: transparent !important;
   border: 1px solid var(--alto-border) !important;
-  border-bottom-width: 1.5px !important;
-  border-radius: 5px !important;
+  border-bottom-width: 1px !important;
+  border-radius: 4px !important;
   box-shadow: none !important;
-  color: var(--alto-ink-500) !important;
+  color: var(--alto-ink-400) !important;
   font-family: var(--ifm-font-family-monospace) !important;
-  font-size: 10.5px !important;
+  font-size: 10px !important;
   font-weight: 500 !important;
   line-height: 1 !important;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 /* Dark mode overrides */
@@ -333,9 +335,9 @@ kbd[class*='searchHint'] {
   background-color: var(--alto-paper-2);
 }
 [data-theme='dark'] kbd[class*='searchHint'] {
-  background-color: var(--alto-paper-2) !important;
+  background-color: transparent !important;
   border-color: var(--alto-border-2) !important;
-  color: var(--alto-ink-700) !important;
+  color: var(--alto-ink-500) !important;
 }
 
 /* ---- Theme toggle: match design's 36×36 bordered square ---- */
