@@ -188,7 +188,8 @@ div[class*='announcementBar'] {
   font-weight: 300;
   font-size: 18px;
   line-height: 1;
-  margin: 0 8px 0 0;
+  /* brand has ~8px inherent right padding → +8px left margin = 16px gap before; 16px gap after */
+  margin: 0 16px 0 8px;
   flex-shrink: 0;
   user-select: none;
 }
