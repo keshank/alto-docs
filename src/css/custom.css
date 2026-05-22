@@ -245,33 +245,41 @@ div[class*='announcementBar'] {
   width: 360px;
   max-width: 360px;
 }
+/* Plugin sets `.searchInput:focus { outline: 2px solid red }` via CSS module — kill it */
+input[class*='searchInput']:focus,
+input[class*='searchInput']:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
 
-/* The actual input — sit inside the pill, no own border */
+/* The actual input — sit inside the pill, stable across all states */
 .navbar__search-input {
   width: 100%;
   height: 40px;
   padding: 0 76px 0 38px;       /* left: room for magnifier  | right: room for kbd hint */
-  border: 1px solid var(--alto-border);
+  border: 1px solid var(--alto-border) !important;
   border-radius: var(--alto-r-md);
   background-color: var(--alto-paper);
   background-image: none;       /* kill plugin's default svg bg */
   color: var(--alto-ink-900);
   font-size: 14px;
   font-family: var(--ifm-font-family-base);
-  transition: border-color .15s, background .15s, box-shadow .15s;
+  /* No transitions — keep the border perfectly stable */
+  outline: none !important;     /* kill the plugin's red outline on focus */
+  box-shadow: none !important;  /* kill any plugin shadow */
 }
 .navbar__search-input::placeholder {
   color: var(--alto-ink-400);
   font-size: 14px;
 }
-.navbar__search-input:hover {
-  background-color: var(--ifm-background-color);
-  border-color: var(--alto-border-2);
-}
-.navbar__search-input:focus {
-  outline: none;
-  border-color: var(--alto-accent);
-  box-shadow: 0 0 0 3px rgba(215, 0, 0, .12);
+/* Hover / focus: keep EVERYTHING stable. Modal opens on click anyway. */
+.navbar__search-input:hover,
+.navbar__search-input:focus,
+.navbar__search-input:focus-visible {
+  outline: none !important;
+  border-color: var(--alto-border) !important;
+  box-shadow: none !important;
+  background-color: var(--alto-paper);
 }
 
 /* Custom magnifying glass icon (replaces plugin's bg-image) */
