@@ -112,9 +112,11 @@ const config: Config = {
         autoCollapseCategories: false,
       },
     },
+    // Footer is rendered as a custom component on the homepage (src/pages/index.tsx).
+    // For doc pages, keep a minimal copyright via Docusaurus's built-in footer.
     footer: {
       style: 'light',
-      copyright: `© ${new Date().getFullYear()} Alto Motors Pvt. Ltd. · Bengaluru, India`,
+      copyright: `© ${new Date().getFullYear()} Alto. All Rights Reserved.`,
     },
     prism: {
       theme: prismThemes.github,

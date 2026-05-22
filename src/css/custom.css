@@ -717,7 +717,7 @@ div[class*='lastUpdated'] {
 .alto-starthere-item .de { font-size: 14px; color: var(--alto-ink-500); line-height: 1.5; }
 
 /* ---- Main sections ---- */
-.alto-sections { max-width: 1100px; margin: 0 auto; padding: 72px 48px 100px; }
+.alto-sections { max-width: 1100px; margin: 0 auto; padding: 72px 48px 24px; }
 .alto-section {
   display: grid; grid-template-columns: 240px 1fr; gap: 56px;
   padding: 40px 0; border-top: 1px solid var(--alto-border);
@@ -777,60 +777,117 @@ div[class*='lastUpdated'] {
 [data-theme='dark'] .alto-list .meta .pill.med  { background: rgba(193,99,26,.16); border-color: rgba(193,99,26,.32); color: #e7a45e; }
 [data-theme='dark'] .alto-list .meta .pill.adv  { background: rgba(255,80,80,.14); border-color: rgba(255,80,80,.28); color: #ff8a8a; }
 
-/* ---- Footer CTA band ---- */
-.alto-footer-cta {
-  background: var(--alto-paper); border-top: 1px solid var(--alto-border); padding: 56px 48px 0;
+/* ============================================================
+   FOOTER (3-tier: prologue → cols → bottom) — matches design
+   ============================================================ */
+.alto-footer {
+  background: var(--alto-paper);
+  color: var(--alto-ink-500);
+  border-top: 1px solid var(--alto-border);
+  padding: 0 48px 28px;
+  font-size: 14px;
 }
-[data-theme='dark'] .alto-footer-cta { background: var(--alto-paper); border-color: var(--alto-border); }
-.alto-footer-cta-inner {
-  max-width: 1100px; margin: 0 auto;
-  display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px;
-  align-items: center; padding-bottom: 48px; border-bottom: 1px solid var(--alto-border);
+
+/* ---- Tier 1: PROLOGUE — "Still stuck?" CTA ---- */
+.alto-footer-prologue {
+  position: relative;
+  max-width: 1200px; margin: 0 auto;
+  padding: 56px 0 48px;
+  display: grid; grid-template-columns: 1.4fr 1fr;
+  gap: 40px;
+  align-items: center;
+  border-bottom: 1px solid var(--alto-border);
 }
-.alto-footer-cta .label {
+.alto-footer-prologue .label {
   font-family: var(--ifm-font-family-monospace); font-size: 11px;
-  color: var(--alto-accent); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 12px;
+  color: var(--alto-accent); letter-spacing: 0.14em;
+  text-transform: uppercase; margin-bottom: 12px;
 }
-.alto-footer-cta h3 {
-  font-family: var(--ifm-heading-font-family); font-weight: 500; font-size: 32px;
-  color: var(--alto-ink-900); margin-bottom: 10px; letter-spacing: -0.022em; line-height: 1.1;
+.alto-footer-prologue h3 {
+  font-family: var(--ifm-heading-font-family); font-weight: 500;
+  font-size: 32px; color: var(--alto-ink-900);
+  margin-bottom: 10px; letter-spacing: -0.022em;
+  line-height: 1.1;
 }
-.alto-footer-cta p { color: var(--alto-ink-500); font-size: 15px; max-width: 480px; line-height: 1.6; margin: 0; }
-.alto-footer-cta-btns { display: flex; gap: 12px; flex-wrap: wrap; justify-self: end; }
+.alto-footer-prologue p {
+  color: var(--alto-ink-500); font-size: 15px;
+  max-width: 480px; line-height: 1.6; margin: 0;
+}
+.alto-footer-prologue .prologue-cta {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  justify-self: end;
+}
+
+/* Shared button styles (still used by prologue CTAs) */
 .alto-btn-primary {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  height: 46px; padding: 0 22px; background: var(--alto-accent); color: #fff; border: 0;
-  border-radius: var(--alto-r-md); font-family: var(--ifm-font-family-base);
+  height: 46px; padding: 0 22px;
+  background: var(--alto-accent); color: #fff; border: 0;
+  border-radius: var(--alto-r-md);
+  font-family: var(--ifm-font-family-base);
   font-size: 14.5px; font-weight: 600; line-height: 1; letter-spacing: -0.005em;
   box-shadow: 0 6px 18px rgba(215,0,0,.18);
   transition: background .15s ease, box-shadow .15s ease, transform .15s ease;
   cursor: pointer; text-decoration: none;
 }
 .alto-btn-primary:hover {
-  background: var(--alto-accent-hover); box-shadow: 0 10px 22px rgba(215,0,0,.26);
-  transform: translateY(-1px); text-decoration: none; color: #fff;
+  background: var(--alto-accent-hover);
+  box-shadow: 0 10px 22px rgba(215,0,0,.26);
+  transform: translateY(-1px);
+  text-decoration: none; color: #fff;
 }
 .alto-btn-ghost {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  height: 46px; padding: 0 22px; background: #fff; color: var(--alto-ink-900);
-  border: 1px solid var(--alto-border-2); border-radius: var(--alto-r-md);
-  font-family: var(--ifm-font-family-base); font-size: 14.5px; font-weight: 600;
-  line-height: 1; letter-spacing: -0.005em;
-  transition: border-color .15s ease, transform .15s ease; cursor: pointer; text-decoration: none;
+  height: 46px; padding: 0 22px;
+  background: #fff; color: var(--alto-ink-900);
+  border: 1px solid var(--alto-border-2);
+  border-radius: var(--alto-r-md);
+  font-family: var(--ifm-font-family-base);
+  font-size: 14.5px; font-weight: 600; line-height: 1; letter-spacing: -0.005em;
+  transition: border-color .15s ease, transform .15s ease;
+  cursor: pointer; text-decoration: none;
 }
 .alto-btn-ghost:hover {
-  border-color: var(--alto-ink-900); transform: translateY(-1px);
+  border-color: var(--alto-ink-900);
+  transform: translateY(-1px);
   text-decoration: none; color: var(--alto-ink-900);
 }
 [data-theme='dark'] .alto-btn-ghost { background: var(--alto-paper-2); border-color: var(--alto-border-2); color: var(--alto-ink-900); }
 
-/* ---- Status stamp ---- */
+/* ---- Tier 2: COLS — brand on left, status/social on right ---- */
+.alto-footer-cols {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 48px;
+  max-width: 1200px; margin: 0 auto;
+  padding: 40px 0;
+  flex-wrap: wrap;
+}
+.alto-footer-brand .lockup {
+  color: var(--alto-ink-900);
+  font-family: var(--ifm-heading-font-family);
+  font-size: 18px; font-weight: 600;
+  display: flex; align-items: center; gap: 12px;
+}
+.alto-footer-brand .lockup img { display: block; }
+.alto-footer-brand p {
+  margin: 14px 0 0;
+  font-size: 13.5px; color: var(--alto-ink-500);
+  line-height: 1.6; max-width: 320px;
+}
+.alto-footer-aside {
+  display: flex; align-items: center; gap: 18px;
+  flex-wrap: wrap;
+}
+
+/* Status stamp (breathing green dot) */
 .alto-stamp {
   display: inline-flex; align-items: center; gap: 8px;
   font-family: var(--ifm-font-family-monospace); font-size: 11px;
   color: var(--alto-ink-700); background: #fff;
-  border: 1px solid var(--alto-border); padding: 5px 12px 5px 10px;
-  border-radius: var(--alto-r-pill); letter-spacing: 0.02em;
+  border: 1px solid var(--alto-border);
+  padding: 5px 12px 5px 10px;
+  border-radius: var(--alto-r-pill);
+  letter-spacing: 0.02em;
 }
 [data-theme='dark'] .alto-stamp { background: var(--alto-paper-2); border-color: var(--alto-border); }
 .alto-stamp .dot {
@@ -840,19 +897,54 @@ div[class*='lastUpdated'] {
 }
 @keyframes alto-status-breathe {
   0%, 100% { box-shadow: 0 0 0 3px rgba(42,138,94,.16); }
-  50%       { box-shadow: 0 0 0 4px rgba(42,138,94,.34); }
+  50%      { box-shadow: 0 0 0 4px rgba(42,138,94,.34); }
 }
 
-/* ---- Social icons ---- */
-.alto-social { display: flex; gap: 10px; }
-.alto-social a {
-  width: 34px; height: 34px; display: grid; place-items: center;
-  border: 1px solid var(--alto-border); background: #fff;
-  border-radius: var(--alto-r-sm); color: var(--alto-ink-500);
-  transition: color .15s, border-color .15s; text-decoration: none;
+/* Social icons */
+.alto-footer-social { display: flex; gap: 10px; }
+.alto-footer-social a {
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border: 1px solid var(--alto-border);
+  background: #fff;
+  border-radius: var(--alto-r-sm);
+  color: var(--alto-ink-500);
+  transition: color .15s, border-color .15s, background .15s;
+  text-decoration: none;
 }
-.alto-social a:hover { color: var(--alto-accent); border-color: var(--alto-accent); text-decoration: none; }
-[data-theme='dark'] .alto-social a { background: var(--alto-paper-2); border-color: var(--alto-border); }
+.alto-footer-social a:hover { color: var(--alto-accent); border-color: var(--alto-accent); text-decoration: none; }
+[data-theme='dark'] .alto-footer-social a { background: var(--alto-paper-2); border-color: var(--alto-border); }
+
+/* ---- Tier 3: BOTTOM — legal + language picker ---- */
+.alto-footer-bottom {
+  border-top: 1px solid var(--alto-border);
+  padding-top: 22px;
+  max-width: 1200px; margin: 0 auto;
+  display: flex; justify-content: space-between; gap: 24px;
+  font-size: 12.5px; color: var(--alto-ink-400);
+  flex-wrap: wrap;
+  align-items: center;
+}
+.alto-footer-bottom-left, .alto-footer-bottom-right {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+
+/* Language picker */
+.alto-lang-picker {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #fff;
+  border: 1px solid var(--alto-border);
+  border-radius: var(--alto-r-pill);
+  padding: 5px 12px;
+  color: var(--alto-ink-700);
+  font-size: 12.5px;
+  font-family: var(--ifm-font-family-base);
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.alto-lang-picker:hover { color: var(--alto-ink-900); border-color: var(--alto-border-2); }
+.alto-lang-picker svg { color: var(--alto-ink-400); }
+[data-theme='dark'] .alto-lang-picker { background: var(--alto-paper-2); border-color: var(--alto-border); }
 
 /* ============================================================
    RESPONSIVE
@@ -865,12 +957,14 @@ div[class*='lastUpdated'] {
   .alto-starthere-inner { grid-template-columns: 1fr; }
   .alto-starthere-item { border-right: 0; border-bottom: 1px solid var(--alto-border); padding: 20px 24px; }
   .alto-starthere-item:last-child { border-bottom: 0; }
-  .alto-sections { padding: 56px 32px 72px; }
+  .alto-sections { padding: 56px 32px 20px; }
   .alto-section { grid-template-columns: 1fr; gap: 24px; padding: 32px 0; }
-  .alto-footer-cta { padding: 48px 32px 0; }
-  .alto-footer-cta-inner { grid-template-columns: 1fr; gap: 20px; padding-bottom: 40px; }
-  .alto-footer-cta-btns { justify-self: start; }
-  .alto-footer-cta h3 { font-size: 28px; }
+  .alto-footer { padding: 0 32px 24px; }
+  .alto-footer-prologue { grid-template-columns: 1fr; gap: 24px; padding: 48px 0 40px; }
+  .alto-footer-prologue .prologue-cta { justify-self: start; }
+  .alto-footer-prologue h3 { font-size: 28px; }
+  .alto-footer-cols { gap: 28px; padding: 32px 0; }
+  .alto-footer-bottom { gap: 14px; }
 }
 
 @media (max-width: 576px) {
@@ -881,7 +975,7 @@ div[class*='lastUpdated'] {
   .alto-hero-search .go { height: 40px; padding: 0 12px; }
   .alto-hero-search .go-text { display: none; }
   .alto-starthere-item { padding: 18px 20px; }
-  .alto-sections { padding: 44px 20px 60px; }
+  .alto-sections { padding: 44px 20px 16px; }
   .alto-section-title { font-size: 24px; }
   .alto-list li { grid-template-columns: 1fr 20px; padding: 16px 0; align-items: start; }
   .alto-list .meta { display: none; }
@@ -889,8 +983,10 @@ div[class*='lastUpdated'] {
   .alto-list .ti .de { font-size: 13px; }
   .alto-list li:hover { padding-left: 0; }
   .alto-list li::before { display: none; }
-  .alto-footer-cta { padding: 40px 20px 0; }
-  .alto-footer-cta h3 { font-size: 22px; }
-  .alto-footer-cta-btns { flex-direction: column; width: 100%; }
+  .alto-footer { padding: 0 20px 20px; }
+  .alto-footer-prologue { padding: 40px 0 32px; }
+  .alto-footer-prologue h3 { font-size: 22px; }
+  .alto-footer-prologue .prologue-cta { flex-direction: column; width: 100%; }
   .alto-btn-primary, .alto-btn-ghost { justify-content: center; width: 100%; }
+  .alto-footer-cols { flex-direction: column; align-items: flex-start; gap: 20px; }
 }

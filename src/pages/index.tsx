@@ -23,9 +23,22 @@ const LinkedinIcon = () => (
     <path d="M20.5 2h-17A1.5 1.5 0 0 0 2 3.5v17A1.5 1.5 0 0 0 3.5 22h17a1.5 1.5 0 0 0 1.5-1.5v-17A1.5 1.5 0 0 0 20.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 1 1 8.3 6.5a1.78 1.78 0 0 1-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0 0 13 14.19a.66.66 0 0 0 0 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 0 1 2.7-1.4c1.55 0 3.36.86 3.36 3.66z" />
   </svg>
 );
-const YoutubeIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M23 7.5s-.2-1.6-.8-2.3c-.8-.9-1.7-.9-2.1-1C17 4 12 4 12 4s-5 0-8.1.2c-.4 0-1.3 0-2.1 1C1.2 5.9 1 7.5 1 7.5S.8 9.4.8 11.3v1.8c0 1.9.2 3.8.2 3.8s.2 1.6.8 2.3c.8.9 1.9.9 2.4 1C5.9 20.4 12 20.5 12 20.5s5 0 8.1-.2c.4 0 1.3 0 2.1-1 .6-.7.8-2.3.8-2.3s.2-1.9.2-3.8v-1.8C23.2 9.4 23 7.5 23 7.5zM9.7 15.2V8.5l6.4 3.4z" />
+const EmailIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="4" width="20" height="16" rx="2"/>
+    <path d="m22 7-10 6L2 7"/>
+  </svg>
+);
+const GlobeIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M2 12h20"/>
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+  </svg>
+);
+const ChevDownIcon = () => (
+  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m6 9 6 6 6-6"/>
   </svg>
 );
 
@@ -205,60 +218,71 @@ function Sections() {
   );
 }
 
-function FooterCTA() {
+/* Full footer — matches design: prologue (CTA) → cols (brand + status/social) → bottom (legal + language) */
+function Footer() {
   return (
-    <div className="alto-footer-cta">
-      <div className="alto-footer-cta-inner">
-        <div>
+    <footer className="alto-footer">
+      {/* PROLOGUE — Still stuck? CTA */}
+      <div className="alto-footer-prologue">
+        <div className="prologue-text">
           <div className="label">STILL STUCK?</div>
           <h3>Talk to an actual engineer.</h3>
           <p>
-            Our technical team responds within one business day.
-            Reach out by email — no bots, no scripted replies.
+            Our technical team responds within one business day. Reach out
+            by email — no bots, no scripted replies.
           </p>
         </div>
-        <div className="alto-footer-cta-btns">
+        <div className="prologue-cta">
           <a href="mailto:support@altomotors.in" className="alto-btn-primary">
             Email support
+            <ChevRIcon />
           </a>
-          <a href="https://altomotors.in/contact" className="alto-btn-ghost" target="_blank" rel="noopener noreferrer">
+          <a href="https://altomotors.in" target="_blank" rel="noopener noreferrer" className="alto-btn-ghost">
             Visit altomotors.in
           </a>
         </div>
       </div>
-    </div>
-  );
-}
 
-function FooterBrand() {
-  return (
-    <div style={{
-      background: 'var(--alto-paper)',
-      borderTop: '1px solid var(--alto-border)',
-      padding: '24px 48px',
-    }}>
-      <div style={{
-        maxWidth: 1100,
-        margin: '0 auto',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 20,
-        flexWrap: 'wrap',
-      }}>
-        <span className="alto-stamp">
-          <span className="dot" />
-          All systems operational
-        </span>
-        <div className="alto-social">
-          <a href="https://linkedin.com/company/altomotors" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-            <LinkedinIcon />
-          </a>
-          <a href="https://youtube.com/@altomotors" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
-            <YoutubeIcon />
-          </a>
+      {/* COLUMNS — brand on left, status + social on right */}
+      <div className="alto-footer-cols">
+        <div className="alto-footer-brand">
+          <div className="lockup">
+            <img src="/img/alto-logo.svg" alt="Alto" height={24} />
+            <span>Alto Motors</span>
+          </div>
+          <p>
+            Plain-language documentation for Alto's BLDC and induction motor
+            systems. Built for the people who actually do the work.
+          </p>
+        </div>
+        <div className="alto-footer-aside">
+          <span className="alto-stamp">
+            <span className="dot" />
+            All systems operational
+          </span>
+          <div className="alto-footer-social">
+            <a href="mailto:support@altomotors.in" aria-label="Email">
+              <EmailIcon />
+            </a>
+            <a href="https://linkedin.com/company/altomotors" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+              <LinkedinIcon />
+            </a>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* BOTTOM — copyright + language picker */}
+      <div className="alto-footer-bottom">
+        <div className="alto-footer-bottom-left">
+          <span>© {new Date().getFullYear()} Alto. All Rights Reserved.</span>
+        </div>
+        <div className="alto-footer-bottom-right">
+          <button className="alto-lang-picker" type="button">
+            <GlobeIcon /> English (IN) <ChevDownIcon />
+          </button>
+        </div>
+      </div>
+    </footer>
   );
 }
 
@@ -268,12 +292,12 @@ export default function Home(): ReactNode {
     <Layout
       title="Alto Motors Documentation"
       description="Plain-language guides, wiring diagrams, and troubleshooting for Alto Motors BLDC and induction motor systems."
+      noFooter
     >
       <Hero />
       <StartHere />
       <Sections />
-      <FooterCTA />
-      <FooterBrand />
+      <Footer />
     </Layout>
   );
 }
