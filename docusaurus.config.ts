@@ -89,6 +89,7 @@ const config: Config = {
         {
           type: 'html',
           position: 'left',
+          className: 'navbar-lockup-item',
           value: '<span class="navbar-logo-sep">/</span><span class="navbar-docs-tag">DOCS</span>',
         },
         // Search slot — search-local plugin renders <div class="navbar__search"> here

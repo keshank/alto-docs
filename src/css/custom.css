@@ -180,12 +180,15 @@ div[class*='announcementBar'] {
 }
 
 /* ---- "/" divider between logo wordmark and DOCS pill ---- */
+/* Zero Docusaurus's default 12px wrapper padding so the lockup hugs the logo */
+.navbar-lockup-item { padding-left: 0 !important; padding-right: 0 !important; }
+
 .navbar-logo-sep {
   color: var(--alto-ink-300);
   font-weight: 300;
   font-size: 18px;
   line-height: 1;
-  margin: 0 8px;
+  margin: 0 8px 0 0;
   flex-shrink: 0;
   user-select: none;
 }
