@@ -179,6 +179,18 @@ div[class*='announcementBar'] {
   min-width: 0;
 }
 
+/* ---- "/" divider between logo wordmark and DOCS pill ---- */
+.navbar-logo-sep {
+  color: var(--alto-ink-300);
+  font-weight: 300;
+  font-size: 18px;
+  line-height: 1;
+  margin: 0 10px 0 4px;
+  flex-shrink: 0;
+  user-select: none;
+}
+[data-theme='dark'] .navbar-logo-sep { color: var(--alto-ink-400); }
+
 /* ---- "DOCS" mono pill ---- */
 .navbar-docs-tag {
   font-family: var(--ifm-font-family-monospace);
@@ -192,116 +204,135 @@ div[class*='announcementBar'] {
   border-radius: var(--alto-r-sm);
   display: inline-block;
   flex-shrink: 0;
-  margin-right: 4px;
 }
 [data-theme='dark'] .navbar-docs-tag {
   background: var(--alto-paper-2);
   color: var(--alto-ink-700);
 }
 
-/* ---- Centred search bar ---- */
-/* The <li> wrapper */
+/* ============================================================
+   SEARCH BAR (rendered by @easyops-cn/docusaurus-search-local)
+   ============================================================
+   Plugin DOM (verified by reading the plugin source):
+     <div class="navbar__search searchBarContainer_XXX">
+       <input class="navbar__search-input searchInput_XXX" />
+       <div class="searchHintContainer_XXX">         <- kbd hints (absolute right)
+         <kbd class="searchHint_XXX">ctrl</kbd>
+         <kbd class="searchHint_XXX">K</kbd>
+       </div>
+     </div>
+   We ONLY target the two global Docusaurus classes (.navbar__search and
+   .navbar__search-input) plus attribute selectors for the hashed classes.
+   ============================================================ */
+
+/* The <li> wrapper that holds the plugin's search */
 .navbar-search-outer {
   flex: 1;
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  padding: 0 !important;
-  margin: 0 !important;
-}
-/* The visible pill */
-.navbar-search-bar {
   display: flex;
   align-items: center;
-  gap: 10px;
-  height: 40px;
-  padding: 0 8px 0 14px;
-  border: 1px solid var(--alto-border);
-  border-radius: var(--alto-r-md);
-  background: var(--alto-paper);
-  width: 360px;
-  max-width: 360px;
-  color: var(--alto-ink-500);
-  font-size: 14px;
-  cursor: text;
-  transition: border-color .15s, background .15s, box-shadow .15s;
-  flex-shrink: 0;
-}
-.navbar-search-bar:hover {
-  background: #fff;
-  border-color: var(--alto-border-2);
-}
-.search-glass {
-  color: var(--alto-ink-400);
-  flex-shrink: 0;
-  display: block;
-}
-.search-ph {
-  flex: 1;
-  min-width: 0;
-  color: var(--alto-ink-400);
-  font-size: 14px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.search-kbd {
-  display: inline-flex;
-  gap: 4px;
-  flex-shrink: 0;
-}
-.search-kbd kbd {
-  display: inline-grid;
-  place-items: center;
-  min-width: 22px;
-  height: 22px;
-  padding: 0 5px;
-  background: #fff;
-  border: 1px solid var(--alto-border);
-  border-bottom-width: 1.5px;
-  border-radius: 5px;
-  color: var(--alto-ink-500);
-  font-family: var(--ifm-font-family-monospace);
-  font-size: 11px;
-  font-weight: 500;
-  line-height: 1;
-}
-[data-theme='dark'] .navbar-search-bar { background: var(--alto-paper); }
-[data-theme='dark'] .navbar-search-bar:hover { background: var(--alto-paper-2); }
-[data-theme='dark'] .search-kbd kbd {
-  background: var(--alto-paper-2);
-  border-color: var(--alto-border-2);
-  color: var(--alto-ink-700);
+  justify-content: center;
+  padding: 0;
+  margin: 0;
 }
 
-/* ---- Version pill ---- */
-.navbar-version-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 32px;
-  padding: 0 12px;
-  background: var(--alto-paper);
+/* The plugin's outer container — make it our 360px pill */
+.navbar__search {
+  position: relative;
+  width: 360px;
+  max-width: 360px;
+}
+
+/* The actual input — sit inside the pill, no own border */
+.navbar__search-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 76px 0 38px;       /* left: room for magnifier  | right: room for kbd hint */
   border: 1px solid var(--alto-border);
-  border-radius: var(--alto-r-pill);
-  font-family: var(--ifm-font-family-monospace);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--alto-ink-700);
-  letter-spacing: 0.02em;
-  cursor: default;
-  flex-shrink: 0;
-  user-select: none;
+  border-radius: var(--alto-r-md);
+  background-color: var(--alto-paper);
+  background-image: none;       /* kill plugin's default svg bg */
+  color: var(--alto-ink-900);
+  font-size: 14px;
+  font-family: var(--ifm-font-family-base);
+  transition: border-color .15s, background .15s, box-shadow .15s;
 }
-.navbar-version-pill:hover { border-color: var(--alto-border-2); color: var(--alto-ink-900); }
-.navbar-vdot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--alto-accent);
-  flex-shrink: 0;
+.navbar__search-input::placeholder {
+  color: var(--alto-ink-400);
+  font-size: 14px;
 }
-[data-theme='dark'] .navbar-version-pill { background: var(--alto-paper); }
+.navbar__search-input:hover {
+  background-color: var(--ifm-background-color);
+  border-color: var(--alto-border-2);
+}
+.navbar__search-input:focus {
+  outline: none;
+  border-color: var(--alto-accent);
+  box-shadow: 0 0 0 3px rgba(215, 0, 0, .12);
+}
+
+/* Custom magnifying glass icon (replaces plugin's bg-image) */
+.navbar__search::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+  background-color: var(--alto-ink-400);
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><path d='m20 20-3.5-3.5'/></svg>");
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><path d='m20 20-3.5-3.5'/></svg>");
+  -webkit-mask-size: contain;
+          mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  z-index: 1;
+}
+
+/* Plugin uses CSS-modules; we target via attribute selector.
+   Important: qualify each selector to NOT match both container and kbd. */
+
+/* The kbd hint container (absolute, overlays right side of input) */
+div[class*='searchHintContainer'] {
+  right: 8px !important;
+  gap: 4px !important;
+}
+
+/* Each kbd badge — qualified with `kbd` so it doesn't also match the container */
+kbd[class*='searchHint'] {
+  display: inline-grid !important;
+  place-items: center !important;
+  min-width: 22px !important;
+  height: 22px !important;
+  padding: 0 5px !important;
+  background-color: var(--ifm-background-color) !important;
+  border: 1px solid var(--alto-border) !important;
+  border-bottom-width: 1.5px !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+  color: var(--alto-ink-500) !important;
+  font-family: var(--ifm-font-family-monospace) !important;
+  font-size: 10.5px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  text-transform: uppercase;
+}
+
+/* Dark mode overrides */
+[data-theme='dark'] .navbar__search-input {
+  background-color: var(--alto-paper);
+  border-color: var(--alto-border);
+  color: var(--alto-ink-900);
+}
+[data-theme='dark'] .navbar__search-input:hover {
+  background-color: var(--alto-paper-2);
+}
+[data-theme='dark'] kbd[class*='searchHint'] {
+  background-color: var(--alto-paper-2) !important;
+  border-color: var(--alto-border-2) !important;
+  color: var(--alto-ink-700) !important;
+}
 
 /* ---- Theme toggle: match design's 36×36 bordered square ---- */
 .navbar__items--right .clean-btn {

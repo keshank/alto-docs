@@ -18,6 +18,23 @@ const config: Config = {
     locales: ['en'],
   },
 
+  // Local search — builds an offline search index at build time
+  plugins: [
+    [
+      require.resolve('@easyops-cn/docusaurus-search-local'),
+      {
+        hashed: true,
+        indexDocs: true,
+        indexBlog: false,
+        indexPages: false,
+        language: ['en'],
+        highlightSearchTermsOnTargetPage: true,
+        searchBarShortcut: true,
+        searchBarShortcutHint: true,
+      },
+    ],
+  ],
+
   stylesheets: [
     {
       href: 'https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap',
@@ -54,7 +71,8 @@ const config: Config = {
     },
     colorMode: {
       defaultMode: 'light',
-      respectPrefersColorScheme: true,
+      // false = one click toggles; true causes the well-known "first click does nothing" bug
+      respectPrefersColorScheme: false,
     },
     navbar: {
       hideOnScroll: false,
@@ -67,24 +85,17 @@ const config: Config = {
         height: 32,
       },
       items: [
-        // "DOCS" mono pill — sits right of the logo
+        // "/" divider + "DOCS" mono pill — matches design lockup: Alto / DOCS
         {
           type: 'html',
           position: 'left',
-          value: '<span class="navbar-docs-tag">DOCS</span>',
+          value: '<span class="navbar-logo-sep">/</span><span class="navbar-docs-tag">DOCS</span>',
         },
-        // Centred search bar
+        // Search slot — search-local plugin renders <div class="navbar__search"> here
         {
-          type: 'html',
+          type: 'search',
           position: 'left',
           className: 'navbar-search-outer',
-          value: '<div class="navbar-search-bar" role="button" tabindex="0" aria-label="Search documentation"><svg class="search-glass" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="search-ph">Search documentation</span><span class="search-kbd"><kbd>⌘</kbd><kbd>K</kbd></span></div>',
-        },
-        // v3.2 version pill (right)
-        {
-          type: 'html',
-          position: 'right',
-          value: '<div class="navbar-version-pill"><span class="navbar-vdot"></span><span>v3.2</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--alto-ink-400)"><path d="m6 9 6 6 6-6"/></svg></div>',
         },
         // altomotors.in link (right)
         {
