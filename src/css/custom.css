@@ -171,7 +171,7 @@ div[class*='announcementBar'] {
 }
 .navbar__inner { height: 100%; }
 .navbar__logo  { height: 32px; width: auto; }
-.navbar__brand { margin-right: 16px; gap: 0; }
+.navbar__brand { margin-right: 0; gap: 0; }
 
 /* ---- Left items grow to allow search centering ---- */
 .navbar__items.navbar__items--left {
@@ -185,7 +185,7 @@ div[class*='announcementBar'] {
   font-weight: 300;
   font-size: 18px;
   line-height: 1;
-  margin: 0 10px 0 4px;
+  margin: 0 8px;
   flex-shrink: 0;
   user-select: none;
 }
