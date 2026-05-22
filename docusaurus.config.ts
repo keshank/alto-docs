@@ -104,6 +104,19 @@ const config: Config = {
           position: 'right',
           value: '<a href="https://altomotors.in" class="navbar__item navbar__link navbar-site-link" target="_blank" rel="noopener">altomotors.in ↗</a>',
         },
+
+        // ─── Mobile drawer nav links (hidden on desktop via .navbar-mobile-only) ───
+        { type: 'doc', docId: 'get-started/quickstart',     position: 'right', label: 'Quickstart',      className: 'navbar-mobile-only' },
+        { type: 'doc', docId: 'get-started/choosing-a-motor', position: 'right', label: 'Choosing a motor', className: 'navbar-mobile-only' },
+        { type: 'doc', docId: 'motors/overview',            position: 'right', label: 'Motors',          className: 'navbar-mobile-only' },
+        { type: 'doc', docId: 'run-maintain/fault-codes',   position: 'right', label: 'Fault codes',     className: 'navbar-mobile-only' },
+        // CTA at the bottom of the drawer
+        {
+          type: 'html',
+          position: 'right',
+          className: 'navbar-mobile-only navbar-drawer-cta',
+          value: '<a href="mailto:support@altomotors.in" class="alto-drawer-cta-link">Email support →</a>',
+        },
       ],
     },
     docs: {

@@ -517,6 +517,42 @@ kbd[class*='searchHint'] {
 .navbar__toggle:hover { color: var(--alto-accent); }
 
 /* ============================================================
+   MOBILE-ONLY NAVBAR ITEMS
+   These nav links live in the navbar items config but should
+   ONLY render inside the hamburger drawer — never on desktop.
+   ============================================================ */
+@media (min-width: 997px) {
+  /* Hide both the link itself AND its <div class="navbar__item"> wrapper */
+  .navbar__items .navbar-mobile-only,
+  .navbar__items .navbar__item:has(.navbar-mobile-only) {
+    display: none !important;
+  }
+}
+
+/* Drawer CTA — bottom row, looks like a red button */
+.alto-drawer-cta-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px 8px 4px;
+  padding: 12px 16px;
+  background: var(--alto-accent);
+  color: #fff !important;
+  border-radius: var(--alto-r-md);
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(215,0,0,.20);
+}
+.alto-drawer-cta-link:hover {
+  background: var(--alto-accent-hover);
+  color: #fff !important;
+  text-decoration: none;
+}
+/* Kill default Docusaurus navbar__item padding on the CTA wrapper so the button hugs the edges */
+.navbar-drawer-cta { padding: 0 !important; }
+
+/* ============================================================
    SIDEBAR
    ============================================================ */
 .menu {
