@@ -1,41 +1,113 @@
-# Website
+# Alto Motors Documentation
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+The documentation website for Alto Motors — plain-language guides, wiring diagrams, troubleshooting, and datasheets for our BLDC and induction motor systems.
 
-## Installation
+🌐 **Live site:** [docs.altomotors.in](https://docs.altomotors.in) *(coming soon)*
+🏢 **Company:** [altomotors.in](https://altomotors.in)
+
+Built with [Docusaurus 3](https://docusaurus.io/) — written for the people on the factory floor, not just engineers.
+
+---
+
+## Tech stack
+
+- **Framework:** Docusaurus 3.10 (TypeScript, MDX)
+- **Search:** `@easyops-cn/docusaurus-search-local` (offline, no API keys)
+- **Design system:** custom CSS tokens (`src/css/custom.css`) — Alto red (`#D70000`), Barlow + Source Sans 3 + JetBrains Mono
+- **Deployment target:** any static host (Vercel, Netlify, Cloudflare Pages)
+
+---
+
+## Running locally
+
+Prerequisites: **Node.js 18+** and **npm**.
 
 ```bash
-yarn
+# install dependencies
+npm install
+
+# start the dev server with hot reload
+npm start
+# → opens at http://localhost:3000/
 ```
 
-## Local Development
+### Run on your LAN (test on phone/tablet)
 
 ```bash
-yarn start
+# pick a port and bind to all network interfaces
+npm start -- --port 3003 --host 0.0.0.0
+# → also reachable from other devices on the same Wi-Fi at http://<your-LAN-IP>:3003/
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+On first connection from another device, allow Node.js through Windows Firewall when prompted.
 
-## Build
+---
+
+## Building for production
 
 ```bash
-yarn build
+# build static site into /build
+npm run build
+
+# serve the production build locally to verify
+npm run serve
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+The search index is built during `npm run build`, so search only returns real results in the production build (dev mode shows a placeholder message).
+
+---
+
+## Project structure
+
+```
+alto-docs/
+├── docs/                  # all documentation pages (.md / .mdx)
+│   ├── get-started/       # quickstart, choosing a motor, safety
+│   ├── motors/            # BLDC, induction datasheets + wiring
+│   ├── drivers/           # DRV-BL120, DRV-BL300
+│   ├── run-maintain/      # wiring, maintenance, troubleshooting, fault codes
+│   └── reference/         # glossary, IP ratings, frame sizes, Modbus
+├── src/
+│   ├── css/custom.css     # design system + all custom styles
+│   └── pages/index.tsx    # custom homepage (hero + sections + footer)
+├── static/img/            # logo, favicon, etc.
+├── docusaurus.config.ts   # site config (navbar, footer, plugins)
+└── sidebars.ts            # left-sidebar tree shown on doc pages
+```
+
+---
+
+## Adding or editing content
+
+1. Find or create the appropriate `.md` file in `docs/`.
+2. Each doc has frontmatter at the top:
+   ```yaml
+   ---
+   id: my-page
+   title: My Page Title
+   sidebar_label: Short label
+   description: Used by search engines and previews.
+   tags: [bldc, wiring]
+   ---
+   ```
+3. If it's a new page, also add it to `sidebars.ts` so it shows up in the left sidebar.
+4. Run `npm start` to preview your changes.
+
+For "Edit this page" links to work, this repo must be public (`editUrl` in `docusaurus.config.ts` points here).
+
+---
 
 ## Deployment
 
-Using SSH:
+Any static host works. Suggested setup with **Vercel** or **Netlify**:
 
-```bash
-USE_SSH=true yarn deploy
-```
+1. Connect this GitHub repo
+2. Set build command: `npm run build`
+3. Set output directory: `build`
+4. Point `docs.altomotors.in` DNS at the host
 
-Not using SSH:
+---
 
-```bash
-GIT_USER=<Your GitHub username> yarn deploy
-```
+## License
 
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+© Alto Motors Pvt. Ltd. — All rights reserved.
