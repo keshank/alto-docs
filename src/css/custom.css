@@ -254,7 +254,10 @@ input[class*='searchInput']:focus-visible {
 
 /* The actual input — sit inside the pill, stable across all states */
 .navbar__search-input {
-  width: 100%;
+  /* Docusaurus's infima.css sets width: 200px by default — force full container width */
+  width: 360px !important;
+  max-width: 360px !important;
+  min-width: 360px !important;
   height: 40px;
   padding: 0 76px 0 38px;       /* left: room for magnifier  | right: room for kbd hint */
   border: 1px solid var(--alto-border) !important;
