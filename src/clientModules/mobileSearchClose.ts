@@ -50,10 +50,29 @@ function wire() {
 
 // Docusaurus fires this after each client-side route change; the first call
 // after hydration is when the navbar input is reliably present.
+//
+// The search input is rendered asynchronously by the search-local plugin, so a
+// single attempt on load can run too early and bail. ensureWired() retries on a
+// short bounded interval until the input exists (or it gives up after ~3s), so a
+// direct page load wires reliably without depending on a later route change.
+let attempts = 0;
+function ensureWired() {
+  if (wired) return;
+  wire();
+  if (!wired && attempts++ < 25) {
+    setTimeout(ensureWired, 120);
+  }
+}
+
 export function onRouteDidUpdate() {
-  requestAnimationFrame(wire);
+  attempts = 0;
+  ensureWired();
 }
 
 if (typeof window !== 'undefined') {
-  window.addEventListener('DOMContentLoaded', () => requestAnimationFrame(wire));
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', ensureWired);
+  } else {
+    ensureWired();
+  }
 }

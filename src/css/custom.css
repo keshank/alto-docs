@@ -590,6 +590,13 @@ kbd[class*='searchHint'] {
   .navbar-search-outer { margin-right: 116px; }
 }
 
+/* Mobile search close-X is injected into <body> on every viewport by
+   mobileSearchClose.ts. Hide it globally by default; it's only revealed on
+   mobile while search is open (see the rule inside the <=576px block). Without
+   this global hide it renders as a stray static button below the footer on
+   desktop/tablet, adding blank body height. */
+#alto-mobile-search-close { display: none; }
+
 /* ---- MOBILE (<= 576px) ---- */
 @media (max-width: 576px) {
   .navbar { padding: 0 12px; height: 58px; position: relative; }
@@ -763,8 +770,7 @@ kbd[class*='searchHint'] {
   kbd[class*='searchHint'],
   .navbar__search [class*='searchClearButton'] { display: none !important; }
 
-  /* Close-X (injected into <body> by mobileSearchClose.ts) — hidden until search opens */
-  #alto-mobile-search-close { display: none; }
+  /* (Close-X hidden globally above; the body.alto-search-open rule below reveals it.) */
 
   /* ── Expanded state: input fills the navbar; logo/pill/toggle/hamburger hide; X appears ── */
   body.alto-search-open .navbar__brand,
