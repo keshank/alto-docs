@@ -11,12 +11,25 @@ const config: Config = {
   organizationName: 'keshank',
   projectName: 'alto-docs',
   onBrokenLinks: 'warn',
-  future: { v4: true },
+  future: {
+    v4: true,
+    faster: {
+      swcJsLoader: true,
+      swcJsMinimizer: true,
+      swcHtmlMinimizer: true,
+      lightningCssMinimizer: true,
+      rspackBundler: false,
+      rspackPersistentCache: false,
+    },
+  },
 
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
   },
+
+  // Mobile navbar search: expand-on-tap + close button (see src/clientModules)
+  clientModules: [require.resolve('./src/clientModules/mobileSearchClose.ts')],
 
   // Local search — builds an offline search index at build time
   plugins: [
@@ -110,13 +123,6 @@ const config: Config = {
         { type: 'doc', docId: 'get-started/choosing-a-motor', position: 'right', label: 'Choosing a motor', className: 'navbar-mobile-only' },
         { type: 'doc', docId: 'motors/overview',            position: 'right', label: 'Motors',          className: 'navbar-mobile-only' },
         { type: 'doc', docId: 'run-maintain/fault-codes',   position: 'right', label: 'Fault codes',     className: 'navbar-mobile-only' },
-        // CTA at the bottom of the drawer
-        {
-          type: 'html',
-          position: 'right',
-          className: 'navbar-mobile-only navbar-drawer-cta',
-          value: '<a href="mailto:support@altomotors.in" class="alto-drawer-cta-link">Email support →</a>',
-        },
       ],
     },
     docs: {

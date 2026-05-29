@@ -21,13 +21,14 @@
   --ifm-font-family-base:     'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --ifm-heading-font-family:  'Barlow', 'Source Sans 3', sans-serif;
   --ifm-font-family-monospace:'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-  --ifm-font-size-base:       16px;
+  --ifm-font-size-base:       13px;
   --ifm-line-height-base:     1.65;
   --ifm-font-weight-semibold: 600;
 
   /* Layout */
   --ifm-navbar-height:        64px;
-  --ifm-sidebar-width:        280px;
+  --ifm-sidebar-width:        232px;
+  --doc-sidebar-width:        232px;
   --ifm-toc-width:            240px;
 
   /* Colours */
@@ -136,6 +137,10 @@
 /* ============================================================
    BASE
    ============================================================ */
+/* Scale the whole document 20% down. Applied to <html> (not <body>) so the
+   visual viewport reference scales with it — viewport units, fixed elements,
+   and calc() expressions stay consistent. */
+html { zoom: 0.8; }
 body {
   font-family: var(--ifm-font-family-base);
   -webkit-font-smoothing: antialiased;
@@ -168,10 +173,29 @@ div[class*='announcementBar'] {
   padding: 0 24px;
   height: 64px;
   border-bottom: 1px solid var(--alto-border);
+  /* Lock the navbar — pinned just below the announcement bar (if visible),
+     no scroll shift, always above sidebar/drawer */
+  position: fixed !important;
+  top: var(--docusaurus-announcement-bar-height, 0px);
+  left: 0;
+  right: 0;
+  z-index: 200;
+}
+/* Announcement bar locks to viewport top so it never scrolls away */
+[class*='announcementBar_'] {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 201;
+}
+/* Page content sits below both the announcement bar and the navbar */
+#__docusaurus {
+  padding-top: calc(var(--docusaurus-announcement-bar-height, 0px) + var(--ifm-navbar-height));
 }
 .navbar__inner { height: 100%; }
-.navbar__logo  { height: 32px; width: auto; }
-.navbar__brand { margin-right: 0; gap: 0; }
+.navbar__logo  { height: 32px; width: auto; margin-right: 0 !important; }
+.navbar__brand { margin-right: 0; gap: 0; padding-right: 0; }
 
 /* ---- Left items grow to allow search centering ---- */
 .navbar__items.navbar__items--left {
@@ -180,16 +204,25 @@ div[class*='announcementBar'] {
 }
 
 /* ---- "/" divider between logo wordmark and DOCS pill ---- */
-/* Zero Docusaurus's default 12px wrapper padding so the lockup hugs the logo */
-.navbar-lockup-item { padding-left: 0 !important; padding-right: 0 !important; }
+/* Zero Docusaurus's default 12px wrapper padding so the lockup hugs the logo.
+   Inline-flex + align-items: center makes "/" and DOCS share the logo's vertical centerline. */
+.navbar-lockup-item {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  display: inline-flex !important;
+  align-items: center;
+}
 
 .navbar-logo-sep {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
   color: var(--alto-ink-300);
   font-weight: 300;
-  font-size: 18px;
+  font-size: 20px;
   line-height: 1;
-  /* brand has ~8px inherent right padding → +8px left margin = 16px gap before; 16px gap after */
-  margin: 0 16px 0 8px;
+  margin: 0 12px 0 10px;
   flex-shrink: 0;
   user-select: none;
 }
@@ -250,6 +283,31 @@ input[class*='searchInput']:focus,
 input[class*='searchInput']:focus-visible {
   outline: none !important;
   box-shadow: none !important;
+}
+
+/* Kill the browser-native clear/search-cancel buttons (mobile Safari, Edge legacy) — they would
+   show as a second "X" inside the input whenever text is typed. */
+.navbar__search-input::-webkit-search-cancel-button,
+.navbar__search-input::-webkit-search-decoration,
+.navbar__search-input::-webkit-search-results-button,
+.navbar__search-input::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+          appearance: none;
+  display: none;
+}
+.navbar__search-input::-ms-clear,
+.navbar__search-input::-ms-reveal {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* The @easyops-cn/docusaurus-search-local plugin renders its own tiny clear-X
+   (`.searchClearButton_*`) inside the input whenever text is typed. On mobile
+   and tablet we already provide a larger close-X button outside the input, so
+   the duplicate tiny X is hidden to keep a single, obvious affordance. */
+@media (max-width: 839px) {
+  .navbar__search [class*='searchClearButton'] { display: none !important; }
 }
 
 /* The actual input — sit inside the pill, stable across all states */
@@ -392,37 +450,382 @@ kbd[class*='searchHint'] {
    ============================================================ */
 
 /* ---- TABLET (577–996px) ---- */
-@media (max-width: 996px) and (min-width: 577px) {
-  .navbar { padding: 0 16px; }
-  .navbar__brand { margin-right: 0; }
+@media (max-width: 839px) and (min-width: 577px) {
+  .navbar { padding: 0 16px; position: relative; }
+  .navbar__inner { position: relative; }
 
-  /* Slash + DOCS pill stay, but tighter */
-  .navbar-logo-sep { font-size: 16px; margin: 0 10px 0 6px; }
-  .navbar-docs-tag { font-size: 9.5px; padding: 2px 6px; letter-spacing: 0.12em; }
+  /* All three lockup pieces share one 26px-tall centerline at tablet width */
+  .navbar__items--left {
+    display: flex !important;
+    align-items: center !important;
+  }
+  .navbar__brand {
+    display: inline-flex !important;
+    align-items: center !important;
+    height: 26px;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .navbar__logo {
+    display: block;
+    height: 26px !important;
+    width: auto;
+    margin: 0 !important;
+  }
+  .navbar__logo > * {
+    display: block;
+    height: 26px !important;
+    width: auto !important;
+  }
+  .navbar__brand .navbar__title { display: none; }
 
-  /* Compact 220px search bar */
+  /* Infima hides .navbar__item at <=996px — force the lockup wrapper visible */
+  .navbar-lockup-item {
+    display: inline-flex !important;
+    align-items: center !important;
+    height: 26px;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .navbar-logo-sep {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    height: 26px;
+    line-height: 1;
+    font-size: 20px;
+    margin: 0 10px 0 6px;
+    color: var(--alto-ink-300);
+    flex-shrink: 0;
+  }
+  .navbar-docs-tag {
+    display: inline-flex !important;
+    align-items: center;
+    height: 26px;
+    font-size: 11px;
+    padding: 0 9px;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  /* Compact 240px search bar (matches Claude design tablet spec) */
   .navbar__search,
   .navbar__search-input {
-    width: 220px !important;
-    max-width: 220px !important;
-    min-width: 220px !important;
+    width: 240px !important;
+    max-width: 240px !important;
+    min-width: 240px !important;
   }
   .navbar__search-input { padding: 0 64px 0 36px !important; }
 
   /* altomotors.in link moves into the hamburger menu (Docusaurus puts right items there) */
   .navbar__items--right .navbar-site-link { display: none; }
+
+  /* ── Hamburger: boxed 35×35, identical to mobile ── */
+  .navbar__toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 35px;
+    height: 35px;
+    display: grid !important;
+    place-items: center;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--alto-border);
+    background: var(--alto-paper);
+    border-radius: var(--alto-r-md);
+    color: var(--alto-ink-700);
+    z-index: 6;
+  }
+  /* Only the border turns red on hover — icon color stays steady */
+  .navbar__toggle:hover { border-color: var(--alto-accent); }
+  .navbar__toggle:focus { outline: none; border-color: var(--alto-border); }
+  .navbar__toggle:focus-visible { border-color: var(--alto-accent); }
+
+  /* ── Theme toggle: boxed 35×35, sits 12px to the LEFT of the hamburger ── */
+  .navbar [class*='colorModeToggle'] {
+    display: block !important;
+    position: absolute;
+    right: 59px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 35px;
+    height: 35px;
+    margin: 0 !important;
+    padding: 0 !important;
+    z-index: 6;
+  }
+  .navbar [class*='colorModeToggle'] button {
+    box-sizing: border-box !important;
+    width: 35px !important;
+    height: 35px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid var(--alto-border) !important;
+    background: var(--alto-paper) !important;
+    border-radius: var(--alto-r-md) !important;
+    color: var(--alto-ink-700) !important;
+    display: grid !important;
+    place-items: center !important;
+  }
+  .navbar [class*='colorModeToggle'] button svg {
+    width: 16px;
+    height: 16px;
+  }
+  /* Only the border turns red on hover — icon color stays steady */
+  .navbar [class*='colorModeToggle'] button:hover {
+    border-color: var(--alto-accent) !important;
+  }
+  .navbar [class*='colorModeToggle'] button:focus {
+    outline: none !important;
+    border-color: var(--alto-border) !important;
+  }
+  .navbar [class*='colorModeToggle'] button:focus-visible {
+    border-color: var(--alto-accent) !important;
+  }
+
+  /* Reserve room on the right so the 240px search doesn't collide with theme + hamburger */
+  .navbar-search-outer { margin-right: 116px; }
 }
 
 /* ---- MOBILE (<= 576px) ---- */
 @media (max-width: 576px) {
-  .navbar { padding: 0 12px; height: 56px; }
-  .navbar__brand { margin-right: 0; }
-  .navbar__logo { height: 26px; }
+  .navbar { padding: 0 12px; height: 58px; position: relative; }
+  .navbar__inner { position: relative; height: 58px; }
 
-  /* Logo only on the left — hide slash + DOCS pill + search bar */
-  .navbar-logo-sep { display: none !important; }
-  .navbar-docs-tag { display: none !important; }
-  .navbar-search-outer { display: none !important; }
+  /* All three lockup pieces — logo, "/" sep, DOCS pill — share one flex centerline.
+     Each is a 22px-tall inline-flex box stacked side-by-side at the navbar's vertical center. */
+  .navbar__items--left {
+    display: flex !important;
+    align-items: center !important;
+    height: 58px;
+  }
+  .navbar__items--left > * { align-self: center !important; }
+
+  .navbar__brand {
+    display: inline-flex !important;
+    align-items: center !important;
+    height: 22px;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .navbar__logo {
+    display: block;
+    height: 22px;
+    width: auto;
+    margin: 0 !important;
+  }
+  /* The img is inside a div.navbar__logo wrapper — force it to the wrapper's height */
+  .navbar__logo > * {
+    display: block;
+    height: 22px !important;
+    width: auto !important;
+  }
+  .navbar__brand .navbar__title { display: none; }
+
+  .navbar-lockup-item {
+    display: inline-flex !important;
+    align-items: center !important;
+    height: 22px;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .navbar-logo-sep {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    height: 22px;
+    line-height: 1;
+    font-size: 18px;
+    margin: 0 8px 0 4px;
+    color: var(--alto-ink-300);
+    flex-shrink: 0;
+  }
+  .navbar-docs-tag {
+    display: inline-flex !important;
+    align-items: center;
+    height: 22px;
+    font-size: 10px;
+    padding: 0 8px;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  /* ── Hamburger: move from left to the right edge, styled as a boxed icon button ── */
+  .navbar__toggle {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 35px;
+    height: 35px;
+    display: grid !important;
+    place-items: center;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--alto-border);
+    background: var(--alto-paper);
+    border-radius: var(--alto-r-md);
+    color: var(--alto-ink-700);
+    z-index: 6;
+  }
+  /* Kill the sticky red focus ring after a tap. Use :focus-visible so
+     keyboard users still see a focus indicator. */
+  .navbar__toggle:focus { outline: none; border-color: var(--alto-border); }
+  .navbar__toggle:focus-visible { border-color: var(--alto-accent); }
+  /* Only the border turns red on hover — keep icon color steady */
+  .navbar__toggle:hover { border-color: var(--alto-accent); }
+
+  /* ── Theme toggle: positioned to the LEFT of the hamburger.
+     The wrapper is just a positioner; the button is the visible box and
+     mirrors .navbar__toggle exactly (40×40, same border/bg/radius). ── */
+  .navbar [class*='colorModeToggle'] {
+    display: block !important;
+    position: absolute;
+    right: 55px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 35px;
+    height: 35px;
+    margin: 0 !important;
+    padding: 0 !important;
+    z-index: 6;
+  }
+  .navbar [class*='colorModeToggle'] button {
+    box-sizing: border-box !important;
+    width: 35px !important;
+    height: 35px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid var(--alto-border) !important;
+    background: var(--alto-paper) !important;
+    border-radius: var(--alto-r-md) !important;
+    color: var(--alto-ink-700) !important;
+    display: grid !important;
+    place-items: center !important;
+  }
+  /* Size only the icon currently shown — Docusaurus renders all 3 icons and
+     hides the inactive ones via its own CSS module. Don't override their display. */
+  .navbar [class*='colorModeToggle'] button svg {
+    width: 16px;
+    height: 16px;
+  }
+  /* Only the border turns red on hover — keep icon color steady */
+  .navbar [class*='colorModeToggle'] button:hover {
+    border-color: var(--alto-accent) !important;
+  }
+  /* Kill the sticky red focus ring after a tap — pointer users shouldn't see
+     a persistent border. Keyboard users still get :focus-visible feedback. */
+  .navbar [class*='colorModeToggle'] button:focus {
+    outline: none !important;
+    border-color: var(--alto-border) !important;
+  }
+  .navbar [class*='colorModeToggle'] button:focus-visible {
+    border-color: var(--alto-accent) !important;
+  }
+
+  /* ── Search: collapsed 35×35 boxed icon, sits LEFT of the theme toggle.
+     Tapping focuses the input → mobileSearchClose.ts adds body.alto-search-open,
+     which expands the input to fill the navbar and reveals the close-X. ── */
+  .navbar-search-outer {
+    position: absolute;
+    right: 102px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 35px;
+    margin: 0;
+    z-index: 6;
+  }
+  .navbar__search { width: 35px !important; max-width: 35px !important; }
+  .navbar__search-input {
+    box-sizing: border-box;
+    width: 35px !important;
+    max-width: 35px !important;
+    min-width: 35px !important;
+    height: 35px;
+    padding: 0 !important;
+    font-size: 0 !important;
+    color: transparent !important;
+    caret-color: transparent;
+    cursor: pointer;
+    border: 1px solid var(--alto-border) !important;
+    background: var(--alto-paper) !important;
+    border-radius: var(--alto-r-md) !important;
+    transition: none;
+  }
+  .navbar__search-input::placeholder { color: transparent !important; font-size: 0 !important; }
+  .navbar__search::before { left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+  /* No ⌘K hint, and no plugin inline clear-X (we provide a larger external close-X) */
+  div[class*='searchHintContainer'],
+  kbd[class*='searchHint'],
+  .navbar__search [class*='searchClearButton'] { display: none !important; }
+
+  /* Close-X (injected into <body> by mobileSearchClose.ts) — hidden until search opens */
+  #alto-mobile-search-close { display: none; }
+
+  /* ── Expanded state: input fills the navbar; logo/pill/toggle/hamburger hide; X appears ── */
+  body.alto-search-open .navbar__brand,
+  body.alto-search-open .navbar-lockup-item,
+  body.alto-search-open .navbar__toggle,
+  body.alto-search-open .navbar [class*='colorModeToggle'] {
+    visibility: hidden;
+  }
+  body.alto-search-open .navbar-search-outer {
+    left: 12px;
+    right: 55px;            /* room for the 35px close-X at right:8px + gap */
+    width: auto;
+  }
+  body.alto-search-open .navbar__search,
+  body.alto-search-open .navbar__search-input {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+  body.alto-search-open .navbar__search-input {
+    padding: 0 14px 0 38px !important;
+    font-size: 15px !important;
+    color: var(--alto-ink-900) !important;
+    caret-color: var(--alto-accent);
+    cursor: text;
+    background: #fff !important;
+    border-color: var(--alto-border-2) !important;
+    box-shadow: var(--alto-shadow-2);
+  }
+  body.alto-search-open .navbar__search-input::placeholder {
+    color: var(--alto-ink-400) !important;
+    font-size: 15px !important;
+  }
+  body.alto-search-open .navbar__search::before { left: 14px; transform: translateY(-50%); }
+
+  body.alto-search-open #alto-mobile-search-close {
+    display: grid;
+    place-items: center;
+    position: fixed;
+    top: 12px;
+    right: 8px;
+    width: 35px;
+    height: 35px;
+    padding: 0;
+    border: 1px solid var(--alto-border-2);
+    background: #fff;
+    border-radius: var(--alto-r-md);
+    color: var(--alto-ink-700);
+    cursor: pointer;
+    z-index: 200;
+    box-shadow: var(--alto-shadow-2);
+  }
+  body.alto-search-open #alto-mobile-search-close svg { width: 18px; height: 18px; }
+  body.alto-search-open #alto-mobile-search-close:hover {
+    color: var(--alto-accent);
+    border-color: var(--alto-accent);
+  }
+  [data-theme='dark'] body.alto-search-open #alto-mobile-search-close {
+    background: var(--alto-paper);
+    border-color: var(--alto-border);
+  }
 
   /* Right items move into mobile hamburger drawer */
   .navbar__items--right .navbar-site-link { display: none; }
@@ -432,11 +835,39 @@ kbd[class*='searchHint'] {
    MOBILE HAMBURGER DRAWER (Docusaurus's .navbar-sidebar)
    Slide-in panel when the hamburger is tapped on mobile/tablet.
    ============================================================ */
+/* Drawer rolls down from beneath the navbar.
+   - Positioned fixed at navbar's bottom edge (set by Layout's useEffect).
+   - max-height animates 0 → full with overflow:hidden, so the drawer's box
+     literally grows downward and can never extend into the navbar zone. */
 .navbar-sidebar {
   background: var(--alto-paper);
-  width: 300px;
+  width: 100vw !important;
+  max-width: 100% !important;
+  position: fixed !important;
+  top: var(--alto-drawer-top, 58px) !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: auto !important;
+  height: calc(100dvh - var(--alto-drawer-top, 58px)) !important;
+  z-index: 100 !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+  /* Closed: invisible + transparent to clicks. Slow, soft opacity fade — no motion. */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: none !important;
+  transition: opacity .3s cubic-bezier(.4, 0, .2, 1), visibility 0s linear .3s !important;
 }
 [data-theme='dark'] .navbar-sidebar { background: var(--alto-paper); }
+.navbar-sidebar--show .navbar-sidebar {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity .3s cubic-bezier(.4, 0, .2, 1), visibility 0s linear 0s !important;
+}
+/* Backdrop is no longer needed — the navbar stays visible. */
+.navbar-sidebar__backdrop { display: none !important; }
 
 .navbar-sidebar__brand {
   height: 56px;
@@ -487,10 +918,91 @@ kbd[class*='searchHint'] {
   color: var(--alto-accent) !important;
 }
 
-/* Hide DOCS pill / slash / version inside the drawer (they were nav decoration only) */
+/* Hide navbar search + the original lockup items inside the drawer (drawer renders its own lockup) */
+.navbar-sidebar .navbar__search,
+.navbar-sidebar [class*='searchBarContainer'],
+.navbar-sidebar .navbar-lockup-item,
 .navbar-sidebar .navbar-logo-sep,
 .navbar-sidebar .navbar-docs-tag,
 .navbar-sidebar .navbar-search-outer { display: none !important; }
+
+/* Custom drawer header: logo + / + DOCS lockup on the left, close X on the right */
+.dx-drawer-head {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px !important;
+  flex: 0 0 56px;
+  padding: 0 12px 0 16px !important;
+  border-bottom: 1px solid var(--alto-border);
+  background: var(--ifm-background-color);
+}
+[data-theme='dark'] .dx-drawer-head { background: var(--alto-bg); }
+.dx-drawer-lockup {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+/* Show the logo (it's hidden by older rules in the desktop scope) */
+.dx-drawer-head .navbar__brand {
+  display: inline-flex !important;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+.dx-drawer-head .navbar__logo { height: 26px; width: auto; margin: 0 !important; }
+.dx-drawer-head .navbar__title { display: none; }
+.dx-drawer-sep {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  margin: 0 8px 0 6px;
+  color: var(--alto-ink-300);
+  font-weight: 300;
+  font-size: 18px;
+  line-height: 1;
+  user-select: none;
+}
+.dx-drawer-docs-tag {
+  font-family: var(--ifm-font-family-monospace);
+  font-weight: 500;
+  font-size: 10px;
+  color: var(--alto-ink-700);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 3px 7px;
+  background: var(--alto-paper-2);
+  border-radius: var(--alto-r-sm);
+}
+.dx-drawer-head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.dx-drawer-head .navbar-sidebar__close,
+.dx-drawer-head .dx-drawer-colormode {
+  width: 36px;
+  height: 36px;
+  display: grid !important;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--alto-ink-500);
+}
+.dx-drawer-head .dx-drawer-colormode button {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--alto-ink-500);
+  display: grid;
+  place-items: center;
+}
+.dx-drawer-head .navbar-sidebar__close:hover,
+.dx-drawer-head .dx-drawer-colormode button:hover { color: var(--alto-accent); }
 
 /* Back button (sub-menu navigation) */
 .navbar-sidebar__back {
@@ -503,9 +1015,10 @@ kbd[class*='searchHint'] {
   padding: 10px 12px;
 }
 
-/* Close button (the X in the drawer header) */
+/* Close button (the X in the drawer header) — pushed to the right when logo is hidden */
 .navbar-sidebar__close {
   color: var(--alto-ink-500);
+  margin-left: auto;
 }
 .navbar-sidebar__close:hover { color: var(--alto-accent); }
 
@@ -515,13 +1028,76 @@ kbd[class*='searchHint'] {
   margin-right: 0;
 }
 .navbar__toggle:hover { color: var(--alto-accent); }
+/* Drop any default SVG icon when our custom burger is in use */
+.alto-burger-btn svg { display: none; }
+
+/* Resting + post-tap (focus only): ink-colored icon, default border. */
+.navbar__toggle,
+.navbar__toggle:focus,
+.navbar [class*='colorModeToggle'] button,
+.navbar [class*='colorModeToggle'] button:focus {
+  color: var(--alto-ink-700) !important;
+  border-color: var(--alto-border) !important;
+  outline: none !important;
+}
+.navbar [class*='colorModeToggle'] button svg {
+  fill: currentColor !important;
+}
+
+/* Smooth ease for hover transitions */
+.navbar__toggle,
+.navbar [class*='colorModeToggle'] button {
+  transition: color .18s ease, border-color .18s ease !important;
+}
+
+/* Hover state — ONLY on true mouse-primary devices.
+   `pointer: fine` excludes touch-primary devices (phones, iPad with finger)
+   even when they report hover capability for things like Apple Pencil. */
+@media (hover: hover) and (pointer: fine) {
+  .navbar__toggle:hover,
+  .navbar [class*='colorModeToggle'] button:hover {
+    color: var(--alto-accent) !important;
+    border-color: var(--alto-accent) !important;
+  }
+}
+
+/* Custom hamburger ↔ X icon — sized for 35×35 button */
+.alto-burger {
+  position: relative;
+  display: block;
+  width: 16px;
+  height: 12px;
+}
+.alto-burger > span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: top .25s ease, bottom .25s ease, transform .25s ease, opacity .15s ease;
+}
+.alto-burger > span:nth-child(1) { top: 0; }
+.alto-burger > span:nth-child(2) { top: calc(50% - 1px); }
+.alto-burger > span:nth-child(3) { bottom: 0; }
+.alto-burger-btn[aria-expanded='true'] .alto-burger > span:nth-child(1) {
+  top: calc(50% - 1px);
+  transform: rotate(45deg);
+}
+.alto-burger-btn[aria-expanded='true'] .alto-burger > span:nth-child(2) {
+  opacity: 0;
+}
+.alto-burger-btn[aria-expanded='true'] .alto-burger > span:nth-child(3) {
+  bottom: calc(50% - 1px);
+  transform: rotate(-45deg);
+}
 
 /* ============================================================
    MOBILE-ONLY NAVBAR ITEMS
    These nav links live in the navbar items config but should
    ONLY render inside the hamburger drawer — never on desktop.
    ============================================================ */
-@media (min-width: 997px) {
+@media (min-width: 840px) {
   /* Hide both the link itself AND its <div class="navbar__item"> wrapper */
   .navbar__items .navbar-mobile-only,
   .navbar__items .navbar__item:has(.navbar-mobile-only) {
@@ -529,42 +1105,443 @@ kbd[class*='searchHint'] {
   }
 }
 
-/* Drawer CTA — bottom row, looks like a red button */
-.alto-drawer-cta-link {
+/* ============================================================
+   MOBILE DRAWER — redesigned layout (dx-* classes)
+   ============================================================ */
+.dx-drawer {
+  display: flex !important;
+  flex-direction: column;
+  overflow: hidden !important;
+}
+.dx-drawer .navbar-sidebar__brand { flex-shrink: 0; }
+
+/* Inline search input — types in place, submits to /search?q=... */
+.dx-drawer-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 16px 0;
+  padding: 0 14px;
+  height: 44px;
+  background: var(--alto-paper-2);
+  border: 1px solid var(--alto-border);
+  border-radius: var(--alto-r-md);
+  flex-shrink: 0;
+  transition: border-color .15s, background .15s;
+}
+.dx-drawer-search:focus-within {
+  border-color: var(--alto-border-2);
+  background: #fff;
+}
+[data-theme='dark'] .dx-drawer-search:focus-within { background: var(--alto-paper); }
+.dx-drawer-search svg { flex-shrink: 0; color: var(--alto-ink-400); }
+.dx-drawer-search input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  outline: none;
+  font-family: var(--ifm-font-family-base);
+  font-size: 14.5px;
+  color: var(--alto-ink-900);
+}
+.dx-drawer-search input::placeholder { color: var(--alto-ink-400); }
+.dx-drawer-search input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+
+/* Tabs */
+.dx-drawer-tabs {
+  display: flex;
+  margin: 16px 16px 0;
+  border-bottom: 1px solid var(--alto-border);
+  flex-shrink: 0;
+}
+.dx-tab {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 10px 14px;
+  font-family: var(--ifm-font-family-base);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--alto-ink-500);
+  cursor: pointer;
+  position: relative;
+  transition: color .12s;
+}
+.dx-tab:hover { color: var(--alto-ink-900); }
+.dx-tab--active { color: var(--alto-accent); font-weight: 600; }
+.dx-tab--active::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: -1px;
+  height: 2px;
+  background: var(--alto-accent);
+  border-radius: 2px 2px 0 0;
+}
+
+/* Body — scrolls between header/tabs and footer */
+.dx-drawer-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 8px 16px;
+}
+.dx-drawer-nav { padding: 4px 0 !important; background: transparent !important; }
+.dx-drawer-nav .menu__list { padding: 0; }
+
+/* Homepage nav: collapsible groups + leaves with optional tag pill */
+.dx-group { padding: 2px 0; }
+.dx-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 10px 12px;
+  font-family: var(--ifm-heading-font-family);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--alto-ink-900);
+  cursor: pointer;
+  border-radius: var(--alto-r-sm);
+}
+.dx-group-head:hover { background: var(--alto-paper-2); }
+.dx-group-chev {
+  color: var(--alto-ink-400);
+  transition: transform .15s;
+}
+.dx-group--open .dx-group-chev { transform: rotate(-180deg); }
+
+.dx-group-list {
+  list-style: none;
+  margin: 2px 0 6px;
+  padding: 0;
+}
+.dx-leaf {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 12px;
+  margin: 1px 0;
+  border-left: 2px solid transparent;
+  font-size: 14px;
+  color: var(--alto-ink-700);
+  text-decoration: none !important;
+  border-radius: 0 var(--alto-r-sm) var(--alto-r-sm) 0;
+  transition: background .12s, color .12s, border-color .12s;
+}
+.dx-leaf:hover {
+  background: var(--alto-paper-2);
+  color: var(--alto-ink-900);
+}
+.dx-leaf--active,
+.dx-leaf--active:hover {
+  background: var(--alto-accent-tint);
+  color: var(--alto-accent);
+  border-left-color: var(--alto-accent);
+  font-weight: 600;
+}
+.dx-leaf-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.dx-leaf-tag {
+  flex-shrink: 0;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--alto-accent);
+  background: var(--alto-accent-tint);
+  border: 1px solid var(--alto-accent-soft);
+  padding: 2px 6px;
+  border-radius: var(--alto-r-pill);
+}
+
+/* altomotors.in row at the bottom of the homepage nav */
+.dx-drawer-extra-link {
+  display: block;
+  margin: 12px 12px 4px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--alto-ink-700) !important;
+  border: 1px solid var(--alto-border);
+  border-radius: var(--alto-r-sm);
+  text-decoration: none !important;
+  background: transparent;
+  transition: border-color .15s, color .15s, background .15s;
+}
+.dx-drawer-extra-link:hover {
+  border-color: var(--alto-accent);
+  color: var(--alto-accent) !important;
+  background: var(--alto-accent-tint);
+}
+
+/* Footer with CTA */
+.dx-drawer-foot {
+  flex-shrink: 0;
+  padding: 12px 16px calc(16px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--alto-border);
+  background: var(--ifm-background-color);
+}
+[data-theme='dark'] .dx-drawer-foot { background: var(--alto-bg); }
+.dx-drawer-cta {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 16px 8px 4px;
-  padding: 12px 16px;
+  gap: 8px;
+  height: 48px;
   background: var(--alto-accent);
   color: #fff !important;
   border-radius: var(--alto-r-md);
+  font-family: var(--ifm-font-family-base);
   font-weight: 600;
   font-size: 15px;
-  text-decoration: none;
+  text-decoration: none !important;
   box-shadow: 0 4px 14px rgba(215,0,0,.20);
+  transition: background .15s, box-shadow .15s, transform .15s;
 }
-.alto-drawer-cta-link:hover {
+.dx-drawer-cta:hover {
   background: var(--alto-accent-hover);
   color: #fff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(215,0,0,.28);
+}
+.dx-drawer-foot-meta {
+  margin-top: 10px;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 11px;
+  color: var(--alto-ink-400);
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+/* ============================================================
+   Dynamic "On this page" TOC inside the mobile drawer
+   ============================================================ */
+.alto-drawer-toc {
+  padding: 8px 8px 4px;
+}
+
+.alto-drawer-toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.alto-drawer-toc-item {
+  margin: 2px 0;
+}
+
+.alto-drawer-toc-link {
+  display: block;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--alto-ink-600);
+  border-radius: var(--alto-r-sm);
+  transition: background .12s, color .12s, padding-left .12s;
   text-decoration: none;
 }
-/* Kill default Docusaurus navbar__item padding on the CTA wrapper so the button hugs the edges */
-.navbar-drawer-cta { padding: 0 !important; }
+
+.alto-drawer-toc-link:hover {
+  background: var(--alto-paper-2);
+  color: var(--alto-ink-900);
+  text-decoration: none;
+  padding-left: 16px; /* Subtle micro-interaction slide-in */
+}
+
+.alto-drawer-toc-item--h3 .alto-drawer-toc-link {
+  padding-left: 24px; /* Indent H3 relative to H2 */
+  font-size: 13px;
+  color: var(--alto-ink-500);
+}
+
+.alto-drawer-toc-item--h3 .alto-drawer-toc-link:hover {
+  padding-left: 28px; /* Micro-interaction slide-in for H3 */
+  color: var(--alto-ink-900);
+}
 
 /* ============================================================
    SIDEBAR
    ============================================================ */
+/* Force-show the doc sidebar + suppress the hamburger toggle from 840px up
+   so 120% browser zoom on common laptops (1024-1280px) doesn't tip into
+   tablet mode. Docusaurus's default break is 997px which is too tight. */
+@media (min-width: 840px) {
+  [class*='docSidebarContainer'] { display: block !important; }
+  .navbar__toggle { display: none !important; }
+  .navbar__item { display: inline-block !important; }
+}
+
+/* Doc page sidebar: stays pinned full-height — extends through the footer
+   so it never cuts off mid-page. The vertical border is the divider; the
+   sidebar's own scrollbar can sit right next to it. */
+@media (min-width: 840px) {
+  /* On doc pages, the fixed sidebar covers the left edge — the footer just
+     shifts to start after the sidebar. Layout stays identical to the homepage
+     footer (CTAs on the right, social/lang on the right, etc.). */
+  body:has([class*='docSidebarContainer']) .alto-footer {
+    padding-left: calc(var(--doc-sidebar-width, 232px) + 32px);
+    padding-right: 32px;
+    transition: padding-left .25s ease;
+  }
+  body:has([class*='docSidebarContainerHidden']) .alto-footer {
+    padding-left: calc(var(--doc-sidebar-hidden-width, 30px) + 32px);
+  }
+
+  [class*='docSidebarContainer'] {
+    position: relative;
+    z-index: 2;
+    /* Kill every property that creates a containing block for `position: fixed`
+       (will-change, transform, filter, clip-path, contain, perspective) so the
+       inner viewport anchors to the actual viewport, not this container. */
+    will-change: auto !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: none !important;
+    -webkit-clip-path: none !important;
+    contain: none !important;
+    perspective: none !important;
+  }
+  /* The inner .sidebar has Docusaurus's `padding-top: var(--ifm-navbar-height)`
+     which used to offset content below the old in-flow navbar. Our navbar is
+     fixed and the viewport already starts below it, so that padding is just
+     dead space — kill it. */
+  [class*='sidebarViewport'] > [class*='sidebar_'] {
+    padding-top: 0 !important;
+  }
+  /* Same with the negative margin Docusaurus applied to docSidebarContainer */
+  [class*='docSidebarContainer'] {
+    margin-top: 0 !important;
+  }
+
+  [class*='sidebarViewport'] {
+    position: fixed !important;
+    top: calc(var(--docusaurus-announcement-bar-height, 0px) + var(--ifm-navbar-height)) !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: auto !important;
+    width: var(--doc-sidebar-width, 232px) !important;
+    /* Let `top` + `bottom` size the height implicitly — explicit `100dvh - X`
+       doesn't play well with the html-level zoom, leaving a gap at the bottom. */
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    background: var(--alto-paper) !important;
+    border-right: 1px solid var(--alto-border) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    z-index: 150 !important;
+  }
+  /* Custom collapse button (swizzled) — full-width 24px line, ink-400 chevron */
+  .alto-sidebar-collapse {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 34px;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    border-top: 1px solid var(--alto-border);
+    color: var(--alto-ink-400);
+    cursor: pointer;
+    opacity: .5;
+    transition: opacity .15s ease, color .15s ease;
+  }
+  .alto-sidebar-collapse:hover,
+  .alto-sidebar-collapse:focus {
+    opacity: 1;
+    color: var(--alto-ink-700);
+    outline: none;
+  }
+  .alto-sidebar-collapse-chev {
+    display: block;
+    width: 7px;
+    height: 7px;
+    border-top: 1.5px solid currentColor;
+    border-left: 1.5px solid currentColor;
+    transform: rotate(-45deg);
+  }
+
+  /* Collapsed state: shrink the fixed viewport to a narrow strip; the
+     expand button fills that strip. */
+  body:has([class*='docSidebarContainerHidden']) [class*='sidebarViewport'] {
+    width: var(--doc-sidebar-hidden-width, 30px) !important;
+    overflow: hidden !important;
+  }
+  [class*='docSidebarContainerHidden'] { cursor: pointer; }
+
+  /* Custom expand button (swizzled) — fills the collapsed strip */
+  .alto-sidebar-expand {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    color: var(--alto-ink-400);
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+  }
+  .alto-sidebar-expand:hover,
+  .alto-sidebar-expand:focus {
+    background: var(--alto-paper-2);
+    color: var(--alto-ink-700);
+    outline: none;
+  }
+  .alto-sidebar-expand-chev {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-top: 1.5px solid currentColor;
+    border-right: 1.5px solid currentColor;
+    transform: rotate(45deg);
+  }
+
+  /* Thin, modern scrollbar that overlays the divider */
+  [class*='sidebarViewport']::-webkit-scrollbar {
+    width: 6px;
+  }
+  [class*='sidebarViewport']::-webkit-scrollbar-thumb {
+    background: var(--alto-border-2);
+    border-radius: 999px;
+  }
+  [class*='sidebarViewport']::-webkit-scrollbar-thumb:hover {
+    background: var(--alto-ink-300);
+  }
+  [class*='sidebarViewport']::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  [class*='sidebarViewport'] {
+    scrollbar-width: thin;
+    scrollbar-color: var(--alto-border-2) transparent;
+  }
+}
+
 .menu {
   font-size: 14px;
   background: var(--alto-paper);
   padding: 16px 12px !important;
 }
+
+/* Leaf links: the scannable items — readable ink, regular weight */
 .menu__link {
-  border-radius: var(--alto-r-sm);
+  border-radius: var(--alto-r-md);
   font-size: 14px;
+  font-weight: 400 !important;
   padding: 7px 12px;
-  transition: background .12s, color .12s;
+  transition: background .14s ease, color .14s ease;
   color: var(--alto-ink-700);
 }
 .menu__link:hover {
@@ -572,19 +1549,79 @@ kbd[class*='searchHint'] {
   color: var(--alto-ink-900);
 }
 [data-theme='dark'] .menu__link:hover { background: rgba(255,255,255,.04); }
-.menu__link--active {
-  background: var(--alto-accent-tint) !important;
+
+/* Active leaf — red text + red outline, no tinted fill. */
+.menu__link--active:not(.menu__link--sublist) {
+  background: transparent !important;
   color: var(--alto-accent) !important;
-  font-weight: 600;
-  border-left: 2px solid var(--alto-accent);
+  font-weight: 500 !important;
+  border: 1px solid var(--alto-accent) !important;
+  padding: 6px 11px !important;
 }
-.menu__list-item-collapsible > .menu__link {
+.menu__link--active:not(.menu__link--sublist):hover {
+  background: transparent !important;
+  color: var(--alto-accent) !important;
+  border-color: var(--alto-accent) !important;
+}
+[data-theme='dark'] .menu__link--active:not(.menu__link--sublist) {
+  background: transparent !important;
+  color: var(--alto-accent) !important;
+  border-color: var(--alto-accent) !important;
+}
+
+/* Category headers — quiet signage above each group. Symmetric vertical
+   padding so the hover box sits cleanly around the text. */
+.menu__list-item-collapsible > .menu__link,
+.menu__list-item-collapsible--active > .menu__link {
   font-family: var(--ifm-heading-font-family);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 600 !important;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--alto-ink-900);
+  letter-spacing: 0.1em;
+  color: var(--alto-ink-400) !important;
+  background: transparent !important;
+  border-left: 0 !important;
+  padding: 8px 12px !important;
+  line-height: 1.2;
+}
+/* Pull the chevron caret in line with the smaller text */
+.menu__caret {
+  padding: 8px 12px !important;
+}
+.menu__caret::before,
+.menu__link--sublist-caret::after {
+  width: .9rem !important;
+  height: .9rem !important;
+  min-width: .9rem !important;
+  background-size: .9rem .9rem !important;
+}
+/* Hover the whole category row as a subtle tint, with rounded corners that
+   match the leaves below. Infima's hover paints the parent, so style it. */
+.menu__list-item-collapsible {
+  background: transparent !important;
+  border-radius: var(--alto-r-md);
+  transition: background .14s ease;
+}
+.menu__list-item-collapsible:hover,
+.menu__list-item-collapsible--active:hover {
+  background: rgba(0,0,0,.03) !important;
+}
+.menu__list-item-collapsible--active {
+  background: transparent !important;
+}
+.menu__list-item-collapsible:hover > .menu__link {
+  background: transparent !important;
+  color: var(--alto-ink-700) !important;
+}
+
+/* Smaller chevron / caret icons */
+.menu__link--sublist-caret::after,
+.menu__caret::before {
+  width: 1rem !important;
+  height: 1rem !important;
+  min-width: 1rem !important;
+  background-size: 1rem 1rem !important;
+  opacity: .55;
 }
 
 /* ============================================================
@@ -859,8 +1896,26 @@ div[class*='lastUpdated'] {
 }
 .alto-hero-suggest a:hover { border-color: var(--alto-accent); color: var(--alto-accent); }
 [data-theme='dark'] .alto-hero-suggest a { background: var(--alto-paper); border-color: var(--alto-border); }
+/* ---- Hero CTA Button Group ---- */
+.alto-hero-ctas {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  margin: 32px 0 24px;
+}
+.alto-hero-ctas .alto-btn-primary {
+  box-shadow: 0 4px 16px rgba(215, 0, 0, 0.2);
+}
+.alto-hero-ctas .alto-btn-primary:hover {
+  box-shadow: 0 8px 24px rgba(215, 0, 0, 0.35);
+  transform: translateY(-2px);
+}
+.alto-hero-ctas .alto-btn-ghost:hover {
+  transform: translateY(-2px);
+}
 
-/* ---- Start-here band ---- */
+/* ---- Start Here Horizontal Row ---- */
 .alto-starthere { border-bottom: 1px solid var(--alto-border); background: #fff; }
 [data-theme='dark'] .alto-starthere { background: var(--alto-bg); border-bottom-color: var(--alto-border); }
 .alto-starthere-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); }
@@ -885,7 +1940,7 @@ div[class*='lastUpdated'] {
 }
 .alto-starthere-item .de { font-size: 14px; color: var(--alto-ink-500); line-height: 1.5; }
 
-/* ---- Main sections ---- */
+/* ---- Main Sections ---- */
 .alto-sections { max-width: 1100px; margin: 0 auto; padding: 72px 48px 24px; }
 .alto-section {
   display: grid; grid-template-columns: 240px 1fr; gap: 56px;
@@ -903,6 +1958,7 @@ div[class*='lastUpdated'] {
 }
 .alto-section-desc { font-size: 14px; color: var(--alto-ink-500); line-height: 1.55; }
 
+/* ---- Document List (Classic Format) ---- */
 .alto-list { list-style: none; padding: 0; margin: 0; }
 .alto-list li {
   display: grid; grid-template-columns: 1fr auto 20px; gap: 24px;
@@ -1118,16 +2174,20 @@ div[class*='lastUpdated'] {
 /* ============================================================
    RESPONSIVE
    ============================================================ */
-@media (max-width: 996px) {
+@media (max-width: 839px) {
   .alto-hero { padding: 56px 32px 48px; }
   .alto-h1 { font-size: 44px; }
   .alto-lede { font-size: 17px; }
   .alto-hero-search { height: 54px; font-size: 15px; }
   .alto-starthere-inner { grid-template-columns: 1fr; }
-  .alto-starthere-item { border-right: 0; border-bottom: 1px solid var(--alto-border); padding: 20px 24px; }
+  .alto-starthere-item { border-right: 0; border-bottom: 1px solid var(--alto-border); }
   .alto-starthere-item:last-child { border-bottom: 0; }
-  .alto-sections { padding: 56px 32px 20px; }
-  .alto-section { grid-template-columns: 1fr; gap: 24px; padding: 32px 0; }
+  .alto-sections { padding: 48px 24px 20px; }
+  .alto-section { grid-template-columns: 1fr; gap: 28px; padding: 32px 0; }
+  .alto-section-head { padding-top: 0; }
+  .alto-curated-section { padding: 48px 32px 64px; }
+  .alto-curated-grid { grid-template-columns: 1fr; gap: 24px; }
+  .alto-curated-banner { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px 24px; }
   .alto-footer { padding: 0 32px 24px; }
   .alto-footer-prologue { grid-template-columns: 1fr; gap: 24px; padding: 48px 0 40px; }
   .alto-footer-prologue .prologue-cta { justify-self: start; }
@@ -1140,22 +2200,66 @@ div[class*='lastUpdated'] {
   .alto-hero { padding: 44px 20px 36px; }
   .alto-h1 { font-size: 34px; line-height: 1.08; }
   .alto-lede { font-size: 16px; margin-bottom: 24px; }
+  .alto-hero-ctas { flex-direction: column; width: 100%; gap: 12px; }
   .alto-hero-search { height: 52px; font-size: 15px; padding: 0 6px 0 16px; }
   .alto-hero-search .go { height: 40px; padding: 0 12px; }
   .alto-hero-search .go-text { display: none; }
-  .alto-starthere-item { padding: 18px 20px; }
-  .alto-sections { padding: 44px 20px 16px; }
-  .alto-section-title { font-size: 24px; }
-  .alto-list li { grid-template-columns: 1fr 20px; padding: 16px 0; align-items: start; }
-  .alto-list .meta { display: none; }
-  .alto-list .ti { font-size: 16px; }
-  .alto-list .ti .de { font-size: 13px; }
-  .alto-list li:hover { padding-left: 0; }
-  .alto-list li::before { display: none; }
+  .alto-starthere-item { padding: 20px 16px; }
+  .alto-sections { padding: 36px 16px 16px; }
+  .alto-section { gap: 20px; padding: 24px 0; }
+  .alto-list li { grid-template-columns: 1fr 20px; gap: 8px; align-items: start; }
+  .alto-list .meta { grid-column: 1; justify-self: start; margin-top: 6px; }
+  .alto-list .ar { grid-column: 2; grid-row: 1 / 3; align-self: center; }
+  .alto-curated-section { padding: 36px 20px 48px; }
+  .alto-curated-card { padding: 24px; }
+  .alto-card-header { flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 12px; }
   .alto-footer { padding: 0 20px 20px; }
   .alto-footer-prologue { padding: 40px 0 32px; }
   .alto-footer-prologue h3 { font-size: 22px; }
   .alto-footer-prologue .prologue-cta { flex-direction: column; width: 100%; }
   .alto-btn-primary, .alto-btn-ghost { justify-content: center; width: 100%; }
   .alto-footer-cols { flex-direction: column; align-items: flex-start; gap: 20px; }
+}
+
+/* ============================================================
+   Mobile Sidebar Reset (Option 3 Stacking)
+   Forces the primaryMenu and MobileDrawerTOC to stack vertically
+   and disables Docusaurus's default side-by-side transition.
+   ============================================================ */
+.navbar-sidebar__items {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  transform: none !important;
+  padding: 16px 12px !important;
+}
+
+.navbar-sidebar__item {
+  width: 100% !important;
+  flex-shrink: 0 !important;
+}
+
+/* Ensure links and text inside the drawer have perfect visibility and contrast */
+.navbar-sidebar__item .menu__link,
+.navbar-sidebar .navbar-site-link,
+.navbar-sidebar .alto-drawer-toc-link {
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: flex !important;
+  color: var(--alto-ink-700) !important;
+}
+
+.navbar-sidebar__item .menu__link:hover,
+.navbar-sidebar .navbar-site-link:hover,
+.navbar-sidebar .alto-drawer-toc-link:hover {
+  color: var(--alto-ink-900) !important;
+  background-color: var(--alto-paper-2) !important;
+  text-decoration: none !important;
+}
+
+.navbar-sidebar__item .menu__link--active,
+.navbar-sidebar__item .menu__link--active:hover {
+  background-color: var(--alto-accent-tint) !important;
+  color: var(--alto-accent) !important;
+  font-weight: 600 !important;
 }
