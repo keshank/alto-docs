@@ -26,7 +26,7 @@ Before you start, have these ready:
 - Cable glands and conduit (if permanent installation)
 
 :::note
-If you ordered a factory-paired motor + driver set, the U/V/W phases ship pre-numbered to match — you can skip ahead to [Driver parameters](#driver-parameters).
+If you ordered a factory-paired motor + driver set, the U/V/W phases ship pre-numbered to match — you can skip ahead to [Driver parameters](#step-5--driver-parameters).
 :::
 
 ---

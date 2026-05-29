@@ -70,6 +70,6 @@ See [DRV-BL120 documentation](/docs/drivers/drv-bl120) for parameter settings sp
 
 ## Related guides
 
-- [How to wire an AL57 to a DRV-BL120](/docs/drivers/drv-bl120#wiring-the-al57)
+- [How to wire an AL57 to a DRV-BL120](/docs/drivers/drv-bl120)
 - [Hall sensor alignment](/docs/motors/hall-sensor)
 - [Fault codes](/docs/run-maintain/fault-codes)
