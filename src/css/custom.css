@@ -602,6 +602,12 @@ kbd[class*='searchHint'] {
   .navbar { padding: 0 12px; height: 58px; position: relative; }
   .navbar__inner { position: relative; height: 58px; }
 
+  /* The mobile navbar is 58px (not the 64px desktop default). Match the content
+     offset var so #__docusaurus padding and the drawer top use 58px too —
+     otherwise a 6px strip of the white page background shows between the navbar
+     and the hero's off-white dotted background. */
+  :root { --ifm-navbar-height: 58px; }
+
   /* All three lockup pieces — logo, "/" sep, DOCS pill — share one flex centerline.
      Each is a 22px-tall inline-flex box stacked side-by-side at the navbar's vertical center. */
   .navbar__items--left {

@@ -1,17 +1,24 @@
 /**
- * Mobile navbar — search close button + expand wiring.
+ * Navbar client behaviours (three small, independent concerns: mobile search
+ * expand/close, announcement-bar height sync, and a theme-color meta).
  *
- * On mobile (<= 576px) the navbar search is collapsed to a 35x35 icon by CSS.
- * Tapping it focuses the underlying search input. This module:
- *   - toggles `body.alto-search-open` on focus/blur, which the CSS uses to
- *     expand the input to fill the navbar (hiding the logo/pill/toggle/menu);
- *   - renders a single 35x35 close (X) button into <body> so the user has an
- *     obvious way to dismiss the expanded search.
+ * 1) Mobile search expand/close. On mobile (<= 576px) the navbar search is
+ *    collapsed to a 35x35 icon by CSS. Tapping it focuses the search input;
+ *    this module toggles `body.alto-search-open` on focus/blur (CSS expands the
+ *    input to fill the navbar) and injects a single 35x35 close (X) button into
+ *    <body> so there's an obvious dismiss affordance. The button lives outside
+ *    the Docusaurus React tree so navbar re-renders never wipe it.
  *
- * The button lives outside the Docusaurus React tree (appended to <body>) so
- * React re-renders of the navbar never wipe it. All visual styling is in
- * custom.css under the `@media (max-width: 576px)` block; this module only
- * handles behaviour.
+ * 2) Announcement-bar height sync. The layout (fixed navbar + content padding +
+ *    fixed doc sidebar) is keyed to `--docusaurus-announcement-bar-height`.
+ *    Because custom.css pins the announcement bar with `position: fixed`,
+ *    Docusaurus's own height/reset logic desyncs: after the (closeable) bar is
+ *    dismissed it leaves the DOM but the variable keeps its old height, leaving
+ *    a phantom gap above the navbar and tucking content under it. We recompute
+ *    the variable from the bar's real height (0 when absent) so the layout stays
+ *    correct whether the bar is shown or dismissed.
+ *
+ * All visual styling lives in custom.css; this module only handles behaviour.
  */
 
 let wired = false;
@@ -64,15 +71,90 @@ function ensureWired() {
   }
 }
 
+/* ── Behaviour 2: keep --docusaurus-announcement-bar-height accurate ───────── */
+
+function syncAnnouncementBar() {
+  if (typeof document === 'undefined') return;
+  const bar = document.querySelector<HTMLElement>('[class*="announcementBar_"]');
+  const h = bar ? Math.round(bar.getBoundingClientRect().height) : 0;
+  document.documentElement.style.setProperty(
+    '--docusaurus-announcement-bar-height',
+    h + 'px',
+  );
+}
+
+// Debounce to one run per frame — a body-subtree observer can fire rapidly.
+let syncScheduled = false;
+function scheduleSync() {
+  if (syncScheduled) return;
+  syncScheduled = true;
+  requestAnimationFrame(() => {
+    syncScheduled = false;
+    syncAnnouncementBar();
+  });
+}
+
+let barObserver: MutationObserver | null = null;
+function startBarSync() {
+  syncAnnouncementBar();
+  if (!barObserver && typeof MutationObserver !== 'undefined') {
+    barObserver = new MutationObserver(scheduleSync);
+    barObserver.observe(document.body, { childList: true, subtree: true });
+  }
+}
+
+/* ── Behaviour 3: theme-color meta so mobile browser chrome blends in ───────── */
+// Without a theme-color, mobile Chrome paints its toolbar/gesture area a default
+// grey that clashes with the page. We keep a single meta in sync with the active
+// theme (the site uses a manual toggle, so we track data-theme rather than a
+// prefers-color-scheme media query). Colors match the page's paper background.
+const THEME_COLORS: Record<'light' | 'dark', string> = {
+  light: '#faf8f4',
+  dark: '#17171a',
+};
+
+function syncThemeColor() {
+  if (typeof document === 'undefined') return;
+  const theme =
+    document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  let meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]:not([media])');
+  if (!meta) {
+    meta = document.createElement('meta');
+    meta.name = 'theme-color';
+    document.head.appendChild(meta);
+  }
+  meta.content = THEME_COLORS[theme];
+}
+
+let themeObserver: MutationObserver | null = null;
+function startThemeColor() {
+  syncThemeColor();
+  if (!themeObserver && typeof MutationObserver !== 'undefined') {
+    // Re-sync whenever the user flips the light/dark toggle.
+    themeObserver = new MutationObserver(syncThemeColor);
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+  }
+}
+
 export function onRouteDidUpdate() {
   attempts = 0;
   ensureWired();
+  scheduleSync();
+  syncThemeColor();
 }
 
 if (typeof window !== 'undefined') {
-  if (document.readyState === 'loading') {
-    window.addEventListener('DOMContentLoaded', ensureWired);
-  } else {
+  const init = () => {
     ensureWired();
+    startBarSync();
+    startThemeColor();
+  };
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
   }
 }
