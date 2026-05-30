@@ -76,30 +76,40 @@ function ensureWired() {
 function syncAnnouncementBar() {
   if (typeof document === 'undefined') return;
   const bar = document.querySelector<HTMLElement>('[class*="announcementBar_"]');
-  const h = bar ? Math.round(bar.getBoundingClientRect().height) : 0;
-  document.documentElement.style.setProperty(
-    '--docusaurus-announcement-bar-height',
-    h + 'px',
-  );
+  const style = document.documentElement.style;
+  if (bar) {
+    // Bar is present. Infima sizes the bar *from* this variable, and Docusaurus
+    // already sets it (via stylesheet) to the bar's natural height. We must NOT
+    // write a measured value here — doing so feeds back and collapses the bar to
+    // ~0 ("cutting"). Just drop any override we set earlier so Docusaurus's
+    // value applies.
+    style.removeProperty('--docusaurus-announcement-bar-height');
+  } else {
+    // Bar dismissed/absent. Because custom.css pins the bar with position:fixed,
+    // Docusaurus's own value goes stale (stays at the old height) instead of
+    // resetting — leaving a phantom gap above the fixed navbar. Force it to 0.
+    style.setProperty('--docusaurus-announcement-bar-height', '0px');
+  }
 }
 
-// Debounce to one run per frame — a body-subtree observer can fire rapidly.
-let syncScheduled = false;
-function scheduleSync() {
-  if (syncScheduled) return;
-  syncScheduled = true;
-  requestAnimationFrame(() => {
-    syncScheduled = false;
-    syncAnnouncementBar();
-  });
-}
-
-let barObserver: MutationObserver | null = null;
+let barClickWired = false;
 function startBarSync() {
-  syncAnnouncementBar();
-  if (!barObserver && typeof MutationObserver !== 'undefined') {
-    barObserver = new MutationObserver(scheduleSync);
-    barObserver.observe(document.body, { childList: true, subtree: true });
+  // Don't react to every DOM mutation — during hydration the bar is briefly
+  // detached, and reacting to that transient set the var to 0 and collapsed the
+  // bar. Instead, sync on a few delayed ticks so we read the *settled* state...
+  [0, 300, 800, 1500].forEach((d) => setTimeout(syncAnnouncementBar, d));
+
+  // ...and re-sync when the user actually dismisses the bar: any click inside it
+  // (the close button is the only control) may unmount it, so reset the var two
+  // frames later once Docusaurus has removed it.
+  if (!barClickWired) {
+    barClickWired = true;
+    document.addEventListener('click', (e) => {
+      const t = e.target as Element | null;
+      if (t && t.closest('[class*="announcementBar"]')) {
+        requestAnimationFrame(() => requestAnimationFrame(syncAnnouncementBar));
+      }
+    });
   }
 }
 
@@ -142,7 +152,7 @@ function startThemeColor() {
 export function onRouteDidUpdate() {
   attempts = 0;
   ensureWired();
-  scheduleSync();
+  syncAnnouncementBar();
   syncThemeColor();
 }
 
