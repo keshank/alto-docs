@@ -189,6 +189,21 @@ div[class*='announcementBar'] {
   right: 0;
   z-index: 201;
 }
+/* Close (X) button — the bar is dark (#0d0d0d), so force the icon white;
+   the default inherits a dark content color and is invisible against it. */
+[class*='announcementBarClose'],
+[class*='announcementBar_'] [class*='closeButton'] {
+  color: #fff !important;
+  opacity: 0.8;
+}
+[class*='announcementBarClose']:hover,
+[class*='announcementBar_'] [class*='closeButton']:hover {
+  opacity: 1;
+}
+[class*='announcementBarClose'] svg,
+[class*='announcementBar_'] [class*='closeButton'] svg {
+  fill: currentColor;
+}
 /* Page content sits below both the announcement bar and the navbar */
 #__docusaurus {
   padding-top: calc(var(--docusaurus-announcement-bar-height, 0px) + var(--ifm-navbar-height));

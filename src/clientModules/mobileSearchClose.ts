@@ -78,16 +78,20 @@ function syncAnnouncementBar() {
   const bar = document.querySelector<HTMLElement>('[class*="announcementBar_"]');
   const style = document.documentElement.style;
   if (bar) {
-    // Bar is present. Infima sizes the bar *from* this variable, and Docusaurus
-    // already sets it (via stylesheet) to the bar's natural height. We must NOT
-    // write a measured value here — doing so feeds back and collapses the bar to
-    // ~0 ("cutting"). Just drop any override we set earlier so Docusaurus's
-    // value applies.
-    style.removeProperty('--docusaurus-announcement-bar-height');
+    // The bar's CSS `height` *is* var(--docusaurus-announcement-bar-height), and
+    // the navbar's `top` + the content padding are keyed to the same var. We must
+    // give it a real px value (Docusaurus's own value is unreliable here — it can
+    // be left as `auto`, which makes navbar `top:auto` and breaks the layout).
+    //
+    // Measure scrollHeight, NOT the bar's own height: scrollHeight is the natural
+    // height needed to fit the content and is independent of the var-driven
+    // `height`, so it doesn't feed back (no collapse) and self-corrects even if
+    // the bar is currently collapsed. Works for the 2-line wrap on mobile too.
+    const h = bar.scrollHeight;
+    if (h > 0) style.setProperty('--docusaurus-announcement-bar-height', h + 'px');
   } else {
-    // Bar dismissed/absent. Because custom.css pins the bar with position:fixed,
-    // Docusaurus's own value goes stale (stays at the old height) instead of
-    // resetting — leaving a phantom gap above the fixed navbar. Force it to 0.
+    // Bar dismissed/absent — force 0 so the fixed navbar pins to the very top
+    // (Docusaurus's value can otherwise go stale and leave a phantom gap).
     style.setProperty('--docusaurus-announcement-bar-height', '0px');
   }
 }
