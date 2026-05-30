@@ -1955,7 +1955,10 @@ div[class*='lastUpdated'] {
   display: inline-flex; align-items: center; gap: 10px;
   font-family: var(--ifm-font-family-monospace); font-size: 11px; font-weight: 500;
   color: var(--alto-ink-500); text-transform: uppercase; letter-spacing: 0.14em;
-  padding: 5px 12px 5px 5px; background: #fff;
+  /* left padding 7px (+1px border = 8px inset) so the DOCS badge sits the same
+     distance from the left as from the top/bottom — its rounded end then nests
+     concentrically inside the outer pill instead of looking radius-mismatched. */
+  padding: 5px 12px 5px 7px; background: #fff;
   border: 1px solid var(--alto-border); border-radius: var(--alto-r-pill); margin-bottom: 22px;
 }
 [data-theme='dark'] .alto-eyebrow { background: var(--alto-paper); border-color: var(--alto-border); }
