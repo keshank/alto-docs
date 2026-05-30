@@ -203,6 +203,8 @@ div[class*='announcementBar'] {
 [class*='announcementBarClose'] svg,
 [class*='announcementBar_'] [class*='closeButton'] svg {
   fill: currentColor;
+  width: 12px;
+  height: 12px;
 }
 /* On small screens the long announcement text wraps hard at 13px and the
    "Read what's new →" link splits mid-phrase. Shrink the type, tighten the
