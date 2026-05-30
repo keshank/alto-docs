@@ -34,7 +34,7 @@
   /* Colours */
   --ifm-background-color:         #ffffff;
   --ifm-background-surface-color: #faf8f4;
-  --ifm-navbar-background-color:  rgba(255, 255, 255, 0.92);
+  --ifm-navbar-background-color:  #ffffff;
   --ifm-navbar-shadow:            0 1px 0 0 #ebe7e0;
   --ifm-footer-background-color:  #faf8f4;
   --ifm-footer-color:             #5b5853;
@@ -99,7 +99,7 @@
 
   --ifm-background-color:         #17171a;
   --ifm-background-surface-color: #1f1f24;
-  --ifm-navbar-background-color:  rgba(23, 23, 26, 0.88);
+  --ifm-navbar-background-color:  #17171a;
   --ifm-navbar-shadow:            0 1px 0 0 #2e2e35;
   --ifm-footer-background-color:  #1f1f24;
   --ifm-footer-color:             #8d8a83;
@@ -167,8 +167,13 @@ div[class*='announcementBar'] {
 
 /* ---- Base shell ---- */
 .navbar {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  /* Opaque background instead of translucent + backdrop-filter:blur — the blur
+     forced the browser to re-sample/re-blur the scrolling content behind the
+     fixed navbar on every frame, which janked all scrolling/animation. We still
+     need a containing block for the fixed drawer (a descendant), which the blur
+     used to provide; transform: translateZ(0) restores that cheaply (and just
+     promotes the bar to its own compositor layer — no per-frame repaint). */
+  transform: translateZ(0);
   padding: 0 24px;
   height: 64px;
   border-bottom: 1px solid var(--alto-border);
@@ -2234,11 +2239,17 @@ div[class*='lastUpdated'] {
 .alto-stamp .dot {
   position: relative; width: 7px; height: 7px; border-radius: 50%;
   background: #2a8a5e; flex-shrink: 0;
+}
+/* Breathing halo as a compositor-only transform+opacity animation (the old
+   version animated box-shadow, which repaints every frame). */
+.alto-stamp .dot::after {
+  content: ''; position: absolute; inset: 0; border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(42,138,94,.5);
   animation: alto-status-breathe 2.6s ease-in-out infinite;
 }
 @keyframes alto-status-breathe {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(42,138,94,.16); }
-  50%      { box-shadow: 0 0 0 4px rgba(42,138,94,.34); }
+  0%, 100% { transform: scale(1); opacity: .5; }
+  50%      { transform: scale(1.4); opacity: .15; }
 }
 
 /* Social icons */
