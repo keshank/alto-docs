@@ -817,7 +817,11 @@ kbd[class*='searchHint'] {
     display: grid;
     place-items: center;
     position: fixed;
-    top: 12px;
+    /* Fixed to the viewport, so it must shift down by the announcement-bar
+       height to stay vertically centered in the navbar (which sits at
+       top: var(--docusaurus-announcement-bar-height)). 12px = (58 navbar − 35
+       button) / 2. */
+    top: calc(var(--docusaurus-announcement-bar-height, 0px) + 12px);
     right: 8px;
     width: 35px;
     height: 35px;
