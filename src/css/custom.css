@@ -1004,6 +1004,16 @@ kbd[class*='searchHint'] {
   fill: currentColor !important;
 }
 
+/* Desktop: the color-mode toggle wrapper renders shorter (26px) than its 36px
+   button and is display:block, so the button overflowed downward and sat ~5px
+   below the navbar centerline. Flex-center the button inside the wrapper. */
+@media (min-width: 997px) {
+  .navbar [class*='colorModeToggle'] {
+    display: flex;
+    align-items: center;
+  }
+}
+
 /* Smooth ease for hover transitions */
 .navbar__toggle,
 .navbar [class*='colorModeToggle'] button {
