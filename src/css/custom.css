@@ -555,13 +555,21 @@ kbd[class*='searchHint'] {
   background: var(--ifm-background-color);
   box-shadow: var(--alto-shadow-3);
 }
-.navbar .dropdown__menu::before {
+/* Hover bridge: fills the gap between the label and the menu so the cursor can
+   travel down without dropping the hover. It must live on the WRAPPER (not the
+   menu): the menu has overflow:auto + pointer-events:none on its pseudo, which
+   clip/disable a ::before bridge. The wrapper is position:relative + overflow:
+   visible, and its ::after is always a descendant of the wrapper — so hovering
+   it keeps .dropdown:hover true. Only generated while the dropdown is open. */
+.navbar__item.dropdown:hover::after,
+.navbar__item.dropdown.dropdown--show::after {
   content: '';
   position: absolute;
   left: 0;
-  right: 0;
-  top: -28px;
-  height: 28px;
+  top: 100%;
+  width: 240px;
+  height: 30px;
+  pointer-events: auto;
 }
 [data-theme='dark'] .navbar .dropdown__menu { background: var(--alto-paper); }
 .navbar .dropdown__link {
