@@ -171,17 +171,20 @@ export default function NavbarMobileSidebarLayout({header}: Props): ReactNode {
     }
   }, [hasTOC, tab]);
 
-  // Drawer rolls down from beneath the navbar. Measure the navbar's actual
-  // bottom on open so the announcement bar (if visible) is respected.
+  // The drawer rolls down from beneath the navbar. It is a fixed descendant of
+  // the navbar, which establishes a containing block via its backdrop-filter —
+  // so the drawer's `top` is measured from the NAVBAR's top, not the viewport.
+  // Use the navbar's own height (not its viewport bottom) so it sits flush at
+  // the navbar's bottom edge; otherwise the announcement-bar offset is counted
+  // twice and a gap equal to the bar height appears.
   useEffect(() => {
     if (!mobileSidebar.shown) return;
     const navbar = document.querySelector<HTMLElement>('.navbar');
     if (!navbar) return;
     const update = () => {
-      const bottom = navbar.getBoundingClientRect().bottom;
       document.documentElement.style.setProperty(
         '--alto-drawer-top',
-        `${Math.max(0, bottom)}px`,
+        `${navbar.offsetHeight}px`,
       );
     };
     update();
