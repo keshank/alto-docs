@@ -292,21 +292,29 @@ div[class*='announcementBar'] {
    .navbar__search-input) plus attribute selectors for the hashed classes.
    ============================================================ */
 
-/* The <li> wrapper that holds the plugin's search */
+/* The wrapper that holds the plugin's search.
+   DESKTOP: absolutely centered in the navbar, fluid width clamped between a
+   usable min and a sensible max so it scales with the viewport without ever
+   getting tiny or spanning the whole bar. (.navbar is position:fixed, so this
+   anchors to it; tablet sets .navbar__inner:relative and it anchors there.) */
 .navbar-search-outer {
-  flex: 1;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(320px, 36vw, 520px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
   margin: 0;
+  z-index: 4;
 }
 
-/* The plugin's outer container — make it our 360px pill */
+/* The plugin's outer container fills the (clamped) wrapper width */
 .navbar__search {
   position: relative;
-  width: 360px;
-  max-width: 360px;
+  width: 100%;
+  max-width: 100%;
 }
 /* Plugin sets `.searchInput:focus { outline: 2px solid red }` via CSS module — kill it */
 input[class*='searchInput']:focus,
@@ -336,16 +344,16 @@ input[class*='searchInput']:focus-visible {
    (`.searchClearButton_*`) inside the input whenever text is typed. On mobile
    and tablet we already provide a larger close-X button outside the input, so
    the duplicate tiny X is hidden to keep a single, obvious affordance. */
-@media (max-width: 839px) {
+@media (max-width: 996px) {
   .navbar__search [class*='searchClearButton'] { display: none !important; }
 }
 
 /* The actual input — sit inside the pill, stable across all states */
 .navbar__search-input {
-  /* Docusaurus's infima.css sets width: 200px by default — force full container width */
-  width: 360px !important;
-  max-width: 360px !important;
-  min-width: 360px !important;
+  /* Fill the (clamped, fluid) container instead of a fixed width */
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
   height: 40px;
   padding: 0 76px 0 38px;       /* left: room for magnifier  | right: room for kbd hint */
   border: 1px solid var(--alto-border) !important;
@@ -480,7 +488,7 @@ kbd[class*='searchHint'] {
    ============================================================ */
 
 /* ---- TABLET (577–996px) ---- */
-@media (max-width: 839px) and (min-width: 577px) {
+@media (max-width: 996px) and (min-width: 577px) {
   .navbar { padding: 0 16px; position: relative; }
   .navbar__inner { position: relative; }
 
@@ -539,14 +547,16 @@ kbd[class*='searchHint'] {
     flex-shrink: 0;
   }
 
-  /* Compact 240px search bar (matches Claude design tablet spec) */
+  /* Tablet: centered fluid search (inherits the absolute-center from base),
+     just a narrower clamp than desktop. */
+  .navbar-search-outer { width: clamp(220px, 40vw, 400px); }
   .navbar__search,
   .navbar__search-input {
-    width: 240px !important;
-    max-width: 240px !important;
-    min-width: 240px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
   }
-  .navbar__search-input { padding: 0 64px 0 36px !important; }
+  .navbar__search-input { padding: 0 56px 0 36px !important; }
 
   /* altomotors.in link moves into the hamburger menu (Docusaurus puts right items there) */
   .navbar__items--right .navbar-site-link { display: none; }
@@ -616,8 +626,6 @@ kbd[class*='searchHint'] {
     border-color: var(--alto-accent) !important;
   }
 
-  /* Reserve room on the right so the 240px search doesn't collide with theme + hamburger */
-  .navbar-search-outer { margin-right: 116px; }
 }
 
 /* Mobile search close-X is injected into <body> on every viewport by
@@ -728,78 +736,42 @@ kbd[class*='searchHint'] {
   /* Only the border turns red on hover — keep icon color steady */
   .navbar__toggle:hover { border-color: var(--alto-accent); }
 
-  /* ── Theme toggle: positioned to the LEFT of the hamburger.
-     The wrapper is just a positioner; the button is the visible box and
-     mirrors .navbar__toggle exactly (40×40, same border/bg/radius). ── */
-  .navbar [class*='colorModeToggle'] {
-    display: block !important;
+  /* ── Theme toggle: hidden on the mobile header — it lives inside the hamburger
+     drawer (see the drawer footer). Right side = search + hamburger only. ── */
+  .navbar [class*='colorModeToggle'] { display: none !important; }
+
+  /* ── Search: a small bar on the right, just left of the hamburger. Tapping it
+     focuses the input, which mobileSearchClose.ts expands to fill the navbar
+     (with a close-X) so there's room to type and read results. ── */
+  .navbar-search-outer {
     position: absolute;
-    right: 55px;
+    right: 50px;            /* sits left of the 35px hamburger at right:8 */
+    left: auto;
     top: 50%;
     transform: translateY(-50%);
-    width: 35px;
-    height: 35px;
-    margin: 0 !important;
-    padding: 0 !important;
+    width: clamp(100px, 32vw, 180px);
+    margin: 0;
     z-index: 6;
   }
-  .navbar [class*='colorModeToggle'] button {
-    box-sizing: border-box !important;
-    width: 35px !important;
-    height: 35px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 1px solid var(--alto-border) !important;
-    background: var(--alto-paper) !important;
-    border-radius: var(--alto-r-md) !important;
-    color: var(--alto-ink-700) !important;
-    display: grid !important;
-    place-items: center !important;
-  }
-  /* Size only the icon currently shown — Docusaurus renders all 3 icons and
-     hides the inactive ones via its own CSS module. Don't override their display. */
-  .navbar [class*='colorModeToggle'] button svg {
-    width: 16px;
-    height: 16px;
-  }
-  /* Only the border turns red on hover — keep icon color steady */
-  .navbar [class*='colorModeToggle'] button:hover {
-    border-color: var(--alto-accent) !important;
-  }
-  /* Kill the sticky red focus ring after a tap — pointer users shouldn't see
-     a persistent border. Keyboard users still get :focus-visible feedback. */
-  .navbar [class*='colorModeToggle'] button:focus {
-    outline: none !important;
-    border-color: var(--alto-border) !important;
-  }
-  .navbar [class*='colorModeToggle'] button:focus-visible {
-    border-color: var(--alto-accent) !important;
-  }
-
-  /* ── Search removed from the mobile navbar (per request). Only the theme
-     toggle + hamburger remain on the right. The input still exists in the DOM
-     (needed for desktop) — here it's simply hidden, which makes the
-     expand/close-X rules below inert. ── */
-  .navbar-search-outer { display: none !important; }
-  .navbar__search { width: 35px !important; max-width: 35px !important; }
+  .navbar__search { width: 100% !important; max-width: 100% !important; }
   .navbar__search-input {
     box-sizing: border-box;
-    width: 35px !important;
-    max-width: 35px !important;
-    min-width: 35px !important;
-    height: 35px;
-    padding: 0 !important;
-    font-size: 0 !important;
-    color: transparent !important;
-    caret-color: transparent;
-    cursor: pointer;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: 36px;
+    padding: 0 8px 0 30px !important;   /* left room for the magnifier */
+    font-size: 12px !important;
+    color: var(--alto-ink-700) !important;
+    caret-color: var(--alto-accent);
+    cursor: text;
     border: 1px solid var(--alto-border) !important;
     background: var(--alto-paper) !important;
     border-radius: var(--alto-r-md) !important;
     transition: none;
   }
-  .navbar__search-input::placeholder { color: transparent !important; font-size: 0 !important; }
-  .navbar__search::before { left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+  .navbar__search-input::placeholder { color: var(--alto-ink-400) !important; font-size: 12px !important; }
+  .navbar__search::before { left: 10px; transform: translateY(-50%); pointer-events: none; }
   /* No ⌘K hint, and no plugin inline clear-X (we provide a larger external close-X) */
   div[class*='searchHintContainer'],
   kbd[class*='searchHint'],
@@ -1138,7 +1110,7 @@ kbd[class*='searchHint'] {
    These nav links live in the navbar items config but should
    ONLY render inside the hamburger drawer — never on desktop.
    ============================================================ */
-@media (min-width: 840px) {
+@media (min-width: 997px) {
   /* Hide both the link itself AND its <div class="navbar__item"> wrapper */
   .navbar__items .navbar-mobile-only,
   .navbar__items .navbar__item:has(.navbar-mobile-only) {
@@ -1331,6 +1303,29 @@ kbd[class*='searchHint'] {
   background: var(--ifm-background-color);
 }
 [data-theme='dark'] .dx-drawer-foot { background: var(--alto-bg); }
+/* Light/dark toggle row — the header theme toggle is hidden on mobile, so it
+   lives here in the drawer footer. */
+.dx-drawer-theme {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 44px;
+  margin-bottom: 10px;
+  padding: 0 14px;
+  border: 1px solid var(--alto-border);
+  border-radius: var(--alto-r-md);
+  background: var(--ifm-background-color);
+  color: var(--alto-ink-700);
+  font-family: var(--ifm-font-family-base);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.dx-drawer-theme svg { flex-shrink: 0; }
+.dx-drawer-theme:hover { border-color: var(--alto-accent); color: var(--alto-accent); }
+[data-theme='dark'] .dx-drawer-theme { background: var(--alto-bg); }
 .dx-drawer-cta {
   display: flex;
   align-items: center;
@@ -1414,7 +1409,7 @@ kbd[class*='searchHint'] {
 /* Force-show the doc sidebar + suppress the hamburger toggle from 840px up
    so 120% browser zoom on common laptops (1024-1280px) doesn't tip into
    tablet mode. Docusaurus's default break is 997px which is too tight. */
-@media (min-width: 840px) {
+@media (min-width: 997px) {
   [class*='docSidebarContainer'] { display: block !important; }
   .navbar__toggle { display: none !important; }
   .navbar__item { display: inline-block !important; }
@@ -1423,7 +1418,7 @@ kbd[class*='searchHint'] {
 /* Doc page sidebar: stays pinned full-height — extends through the footer
    so it never cuts off mid-page. The vertical border is the divider; the
    sidebar's own scrollbar can sit right next to it. */
-@media (min-width: 840px) {
+@media (min-width: 997px) {
   /* On doc pages, the fixed sidebar covers the left edge — the footer just
      shifts to start after the sidebar. Layout stays identical to the homepage
      footer (CTAs on the right, social/lang on the right, etc.). */
