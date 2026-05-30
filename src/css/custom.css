@@ -786,9 +786,12 @@ kbd[class*='searchHint'] {
   body.alto-search-open .navbar [class*='colorModeToggle'] {
     visibility: hidden;
   }
+  /* Expanded: symmetric left/right margins so the field is centered in the
+     navbar (not left-aligned). The close-X sits just past the right margin
+     (it's at right:8px, a 35px box, so the 52px margin clears it). */
   body.alto-search-open .navbar-search-outer {
-    left: 12px;
-    right: 55px;            /* room for the 35px close-X at right:8px + gap */
+    left: 52px;
+    right: 52px;
     width: auto;
   }
   body.alto-search-open .navbar__search,
