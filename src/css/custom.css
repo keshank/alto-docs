@@ -491,17 +491,48 @@ kbd[class*='searchHint'] {
 @media (max-width: 996px) {
   .navbar-desktop-nav { display: none !important; }
 }
-.navbar-desktop-nav .navbar__link {
+/* NOTE: Docusaurus puts the className on the dropdown LINK (<a>), not the
+   wrapper. So .navbar-desktop-nav IS the link; the wrapper is its parent
+   (.navbar__item.dropdown, which gets .dropdown--show when open) and the menu
+   (.dropdown__menu) is the link's sibling. These are the only navbar dropdowns,
+   so the menu/items are styled via the generic .navbar .dropdown__* selectors. */
+
+/* Space the nav away from the DOCS pill (margin on the first dropdown wrapper) */
+.navbar-lockup-item + .navbar__item.dropdown { margin-left: 16px; }
+
+/* Label — the link itself. Subtle darken on hover/open/active, never red. */
+.navbar-desktop-nav.navbar__link {
   font-size: 14px;
   font-weight: 500;
   color: var(--alto-ink-700);
   padding: 6px 10px;
 }
-.navbar-desktop-nav .navbar__link:hover,
-.navbar-desktop-nav.dropdown--show > .navbar__link {
-  color: var(--alto-ink-900);
+.navbar-desktop-nav.navbar__link:hover,
+.navbar-desktop-nav.navbar__link--active,
+.dropdown--show > .navbar-desktop-nav.navbar__link {
+  color: var(--alto-ink-900) !important;
 }
-.navbar-desktop-nav .dropdown__menu {
+/* Caret — smaller, dimmer, and inverts (rotates 180°) when the menu is open
+   (the dropdown is hover-opened, so trigger on the wrapper's :hover as well as
+   the click .dropdown--show). `top` does the vertical nudge so `transform` is
+   free for a clean rotation. */
+.navbar-desktop-nav.navbar__link::after {
+  border-width: 0.26em 0.26em 0;
+  margin-left: 0.42em;
+  position: relative;
+  top: -1px;
+  opacity: 0.5;
+  transform: rotate(0);
+  transition: transform 0.2s ease, opacity 0.15s ease;
+}
+.navbar__item.dropdown:hover > .navbar-desktop-nav.navbar__link::after,
+.dropdown--show > .navbar-desktop-nav.navbar__link::after {
+  opacity: 1;
+  transform: rotate(180deg);
+}
+
+/* Dropdown menu (only the desktop nav dropdowns exist in the navbar) */
+.navbar .dropdown__menu {
   min-width: 224px;
   padding: 6px;
   border: 1px solid var(--alto-border);
@@ -509,19 +540,19 @@ kbd[class*='searchHint'] {
   background: var(--ifm-background-color);
   box-shadow: var(--alto-shadow-3);
 }
-[data-theme='dark'] .navbar-desktop-nav .dropdown__menu { background: var(--alto-paper); }
-.navbar-desktop-nav .dropdown__link {
+[data-theme='dark'] .navbar .dropdown__menu { background: var(--alto-paper); }
+.navbar .dropdown__link {
   font-size: 13.5px;
   border-radius: var(--alto-r-sm);
   color: var(--alto-ink-700);
   padding: 7px 10px;
 }
-.navbar-desktop-nav .dropdown__link:hover {
+.navbar .dropdown__link:hover {
   background: var(--alto-paper-2);
   color: var(--alto-ink-900);
 }
-.navbar-desktop-nav .dropdown__link--active,
-.navbar-desktop-nav .dropdown__link--active:hover {
+.navbar .dropdown__link--active,
+.navbar .dropdown__link--active:hover {
   background: var(--alto-accent-tint);
   color: var(--alto-accent);
 }
