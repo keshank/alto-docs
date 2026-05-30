@@ -2089,16 +2089,8 @@ div[class*='lastUpdated'] {
 }
 .alto-list a { display: contents; }
 .alto-list li:first-child { border-top: 1px solid var(--alto-border); }
-.alto-list li::before {
-  content: ''; position: absolute; left: -16px; top: 50%;
-  transform: translateY(-50%) scaleX(0);
-  width: 6px; height: 6px; border-radius: 50%; background: var(--alto-accent);
-  transition: transform .2s; transform-origin: right center;
-}
-/* No layout shift on hover — the row stays put. The reveal dot sits in the
-   56px column-gap to the left (left:-16px), and the title/arrow colour cues
-   provide the hover feedback. */
-.alto-list li:hover::before { transform: translateY(-50%) scaleX(1); transform-origin: left center; }
+/* No hover dot and no layout shift — the row stays put. The title + arrow
+   colour cues provide the hover feedback. */
 .alto-list li:hover .ti { color: var(--alto-accent); }
 .alto-list li:hover .ar { color: var(--alto-accent); transform: translateX(4px); }
 .alto-list .ti {
