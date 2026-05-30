@@ -608,6 +608,12 @@ kbd[class*='searchHint'] {
      and the hero's off-white dotted background. */
   :root { --ifm-navbar-height: 58px; }
 
+  /* In light mode the html background is pure white, so the page bottom /
+     overscroll area (where the phone's nav bar sits) shows white instead of the
+     off-white theme. Paint it paper so it blends (matches the theme-color meta).
+     Dark mode html is already the dark bg, so leave it alone. */
+  html:not([data-theme='dark']) { background-color: var(--alto-paper); }
+
   /* All three lockup pieces — logo, "/" sep, DOCS pill — share one flex centerline.
      Each is a 22px-tall inline-flex box stacked side-by-side at the navbar's vertical center. */
   .navbar__items--left {
@@ -740,18 +746,11 @@ kbd[class*='searchHint'] {
     border-color: var(--alto-accent) !important;
   }
 
-  /* ── Search: collapsed 35×35 boxed icon, sits LEFT of the theme toggle.
-     Tapping focuses the input → mobileSearchClose.ts adds body.alto-search-open,
-     which expands the input to fill the navbar and reveals the close-X. ── */
-  .navbar-search-outer {
-    position: absolute;
-    right: 102px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 35px;
-    margin: 0;
-    z-index: 6;
-  }
+  /* ── Search removed from the mobile navbar (per request). Only the theme
+     toggle + hamburger remain on the right. The input still exists in the DOM
+     (needed for desktop) — here it's simply hidden, which makes the
+     expand/close-X rules below inert. ── */
+  .navbar-search-outer { display: none !important; }
   .navbar__search { width: 35px !important; max-width: 35px !important; }
   .navbar__search-input {
     box-sizing: border-box;
