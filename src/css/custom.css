@@ -768,9 +768,10 @@ kbd[class*='searchHint'] {
     z-index: 200;
     transition: border-color 0.15s, color 0.15s;
   }
-  /* Each freshly-swapped icon (search ⇄ theme) fades + scales in, so the role
-     change reads as a smooth in-place replacement — no JS timer involved. */
-  #alto-mobile-search-icon svg { animation: alto-icon-in 0.16s ease; }
+  /* Fade + scale the icon ONLY during a deliberate search ⇄ theme swap (the
+     .is-swapping class is toggled by mobileSearchClose.ts). Animating every svg
+     insertion made the icon visibly blink in on each page load/refresh. */
+  #alto-mobile-search-icon.is-swapping svg { animation: alto-icon-in 0.16s ease; }
   @keyframes alto-icon-in {
     from { opacity: 0; transform: scale(0.6); }
     to { opacity: 1; transform: scale(1); }

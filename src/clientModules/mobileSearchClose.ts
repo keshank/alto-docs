@@ -60,9 +60,15 @@ function updateNavButton() {
     'aria-label',
     wantMode === 'search' ? 'Search' : isDark() ? 'Switch to light mode' : 'Switch to dark mode',
   );
-  // Instant swap; the fresh <svg> fades/scales in via a CSS animation, so the
-  // smoothness doesn't depend on a JS timer racing with drawer-animation mutations.
   btn.innerHTML = wantMode === 'search' ? ICON_SEARCH : isDark() ? ICON_SUN : ICON_MOON;
+  // Animate THIS swap only (re-add the class so the animation restarts). Class
+  // changes aren't watched by the observer, so there's no mutation loop. This is
+  // reached only when the icon actually changes — never on initial mount, so the
+  // icon no longer blinks in on page load.
+  btn.classList.remove('is-swapping');
+  void btn.offsetWidth; // reflow so the animation re-triggers on rapid swaps
+  btn.classList.add('is-swapping');
+  window.setTimeout(() => btn.classList.remove('is-swapping'), 220);
 }
 
 function createSearchIcon(): HTMLButtonElement {
