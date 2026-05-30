@@ -497,30 +497,41 @@ kbd[class*='searchHint'] {
    (.dropdown__menu) is the link's sibling. These are the only navbar dropdowns,
    so the menu/items are styled via the generic .navbar .dropdown__* selectors. */
 
-/* Space the nav away from the DOCS pill (margin on the first dropdown wrapper) */
-.navbar-lockup-item + .navbar__item.dropdown { margin-left: 16px; }
+/* Tighten the nav items into one group: the per-item gap comes from the
+   wrapper's horizontal padding (Docusaurus default ~10px each side), so trim it.
+   Then a single deliberate gap after the DOCS pill separates the pill from the
+   group. */
+.navbar__item.dropdown {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.navbar-lockup-item + .navbar__item.dropdown { margin-left: 18px; }
 
 /* Label — the link itself. Subtle darken on hover/open/active, never red. */
 .navbar-desktop-nav.navbar__link {
   font-size: 14px;
   font-weight: 500;
   color: var(--alto-ink-700);
-  padding: 6px 10px;
+  padding: 6px 8px;
 }
 .navbar-desktop-nav.navbar__link:hover,
 .navbar-desktop-nav.navbar__link--active,
 .dropdown--show > .navbar-desktop-nav.navbar__link {
   color: var(--alto-ink-900) !important;
 }
-/* Caret — smaller, dimmer, and inverts (rotates 180°) when the menu is open
-   (the dropdown is hover-opened, so trigger on the wrapper's :hover as well as
-   the click .dropdown--show). `top` does the vertical nudge so `transform` is
-   free for a clean rotation. */
+/* Caret — a thin OUTLINE chevron (not Docusaurus's filled triangle), via an SVG
+   mask filled with currentColor. Inverts (rotates 180°) when the menu opens —
+   on hover AND click — with a smooth transition, like Supabase. */
 .navbar-desktop-nav.navbar__link::after {
-  border-width: 0.26em 0.26em 0;
-  margin-left: 0.42em;
-  position: relative;
-  top: -1px;
+  content: '';
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 0 !important;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>") center / contain no-repeat;
+          mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>") center / contain no-repeat;
+  margin-left: 0.3em;
   opacity: 0.5;
   transform: rotate(0);
   transition: transform 0.2s ease, opacity 0.15s ease;
@@ -531,14 +542,26 @@ kbd[class*='searchHint'] {
   transform: rotate(180deg);
 }
 
-/* Dropdown menu (only the desktop nav dropdowns exist in the navbar) */
+/* Dropdown menu (only the desktop nav dropdowns exist in the navbar).
+   Pushed down so it sits clearly BELOW the navbar's bottom border instead of
+   overlapping it. The ::before fills that gap with a transparent bridge so
+   moving the cursor from the label to the menu doesn't drop the hover. */
 .navbar .dropdown__menu {
+  margin-top: 11px;
   min-width: 224px;
   padding: 6px;
   border: 1px solid var(--alto-border);
   border-radius: var(--alto-r-md);
   background: var(--ifm-background-color);
   box-shadow: var(--alto-shadow-3);
+}
+.navbar .dropdown__menu::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -13px;
+  height: 13px;
 }
 [data-theme='dark'] .navbar .dropdown__menu { background: var(--alto-paper); }
 .navbar .dropdown__link {
