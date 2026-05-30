@@ -143,15 +143,17 @@ function syncAnnouncementBar() {
   const style = document.documentElement.style;
   if (bar) {
     // The bar's CSS `height` *is* var(--docusaurus-announcement-bar-height), and
-    // the navbar's `top` + the content padding are keyed to the same var. We must
-    // give it a real px value (Docusaurus's own value is unreliable here — it can
-    // be left as `auto`, which makes navbar `top:auto` and breaks the layout).
+    // the navbar's `top` + content padding are keyed to the same var, so we must
+    // give it a real px value (Docusaurus's own can be `auto`, breaking layout).
     //
-    // Measure scrollHeight, NOT the bar's own height: scrollHeight is the natural
-    // height needed to fit the content and is independent of the var-driven
-    // `height`, so it doesn't feed back (no collapse) and self-corrects even if
-    // the bar is currently collapsed. Works for the 2-line wrap on mobile too.
-    const h = bar.scrollHeight;
+    // Measure the CONTENT child's natural height — NOT the bar's own height or
+    // scrollHeight, which equal the var-driven height (circular). With the bar's
+    // overflow:visible + flex-centering, scrollHeight returns the too-short bar
+    // height, so on narrow screens the wrapped 2nd line overflowed and cut off.
+    // The content child's offsetHeight is its true height (text + its padding),
+    // independent of the var, so it self-corrects and fits every line.
+    const content = bar.querySelector<HTMLElement>('[class*="announcementBarContent"]');
+    const h = Math.max(content ? content.offsetHeight : 0, bar.scrollHeight);
     if (h > 0) style.setProperty('--docusaurus-announcement-bar-height', h + 'px');
   } else {
     // Bar dismissed/absent — force 0 so the fixed navbar pins to the very top
