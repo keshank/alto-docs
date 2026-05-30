@@ -768,7 +768,9 @@ kbd[class*='searchHint'] {
     z-index: 200;
     transition: border-color 0.15s, color 0.15s;
   }
-  #alto-mobile-search-icon:hover { border-color: var(--alto-accent); color: var(--alto-accent); }
+  /* Hover/focus/active handling is unified with the other navbar buttons below
+     (hover only on mouse-primary devices; focus reset; non-sticky :active) so
+     the red doesn't stick after a tap on touch devices. */
   [data-theme='dark'] #alto-mobile-search-icon { background: var(--alto-paper); border-color: var(--alto-border); }
 
   /* Right items move into mobile hamburger drawer */
@@ -979,10 +981,18 @@ kbd[class*='searchHint'] {
 .navbar__toggle,
 .navbar__toggle:focus,
 .navbar [class*='colorModeToggle'] button,
-.navbar [class*='colorModeToggle'] button:focus {
+.navbar [class*='colorModeToggle'] button:focus,
+#alto-mobile-search-icon,
+#alto-mobile-search-icon:focus {
   color: var(--alto-ink-700) !important;
   border-color: var(--alto-border) !important;
   outline: none !important;
+}
+/* Non-sticky press feedback: red only while the finger/mouse is down, clears on
+   release — so it "blinks" on tap but never gets stuck. */
+#alto-mobile-search-icon:active {
+  color: var(--alto-accent) !important;
+  border-color: var(--alto-accent) !important;
 }
 .navbar [class*='colorModeToggle'] button svg {
   fill: currentColor !important;
@@ -999,7 +1009,8 @@ kbd[class*='searchHint'] {
    even when they report hover capability for things like Apple Pencil. */
 @media (hover: hover) and (pointer: fine) {
   .navbar__toggle:hover,
-  .navbar [class*='colorModeToggle'] button:hover {
+  .navbar [class*='colorModeToggle'] button:hover,
+  #alto-mobile-search-icon:hover {
     color: var(--alto-accent) !important;
     border-color: var(--alto-accent) !important;
   }
