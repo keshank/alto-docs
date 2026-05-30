@@ -766,6 +766,14 @@ kbd[class*='searchHint'] {
     color: var(--alto-ink-700);
     cursor: pointer;
     z-index: 200;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  /* Each freshly-swapped icon (search ⇄ theme) fades + scales in, so the role
+     change reads as a smooth in-place replacement — no JS timer involved. */
+  #alto-mobile-search-icon svg { animation: alto-icon-in 0.16s ease; }
+  @keyframes alto-icon-in {
+    from { opacity: 0; transform: scale(0.6); }
+    to { opacity: 1; transform: scale(1); }
   }
   #alto-mobile-search-icon:hover { border-color: var(--alto-accent); color: var(--alto-accent); }
   [data-theme='dark'] #alto-mobile-search-icon { background: var(--alto-paper); border-color: var(--alto-border); }
@@ -1233,29 +1241,6 @@ kbd[class*='searchHint'] {
   background: var(--ifm-background-color);
 }
 [data-theme='dark'] .dx-drawer-foot { background: var(--alto-bg); }
-/* Light/dark toggle row — the header theme toggle is hidden on mobile, so it
-   lives here in the drawer footer. */
-.dx-drawer-theme {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  height: 44px;
-  margin-bottom: 10px;
-  padding: 0 14px;
-  border: 1px solid var(--alto-border);
-  border-radius: var(--alto-r-md);
-  background: var(--ifm-background-color);
-  color: var(--alto-ink-700);
-  font-family: var(--ifm-font-family-base);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: border-color .15s, color .15s;
-}
-.dx-drawer-theme svg { flex-shrink: 0; }
-.dx-drawer-theme:hover { border-color: var(--alto-accent); color: var(--alto-accent); }
-[data-theme='dark'] .dx-drawer-theme { background: var(--alto-bg); }
 .dx-drawer-cta {
   display: flex;
   align-items: center;

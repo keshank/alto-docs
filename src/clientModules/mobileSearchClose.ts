@@ -22,33 +22,74 @@
 
 let searchIconWired = false;
 
+const ICON_SEARCH =
+  '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
+const ICON_MOON =
+  '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+const ICON_SUN =
+  '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>';
+
+function drawerIsOpen(): boolean {
+  return (
+    document.querySelector('.navbar__toggle')?.getAttribute('aria-expanded') === 'true'
+  );
+}
+function isDark(): boolean {
+  return document.documentElement.getAttribute('data-theme') === 'dark';
+}
+
+/**
+ * The single navbar action button morphs between two roles, in place, based on
+ * whether the drawer is open:
+ *   closed → search  (opens the drawer + focuses its search field)
+ *   open   → theme   (toggles light/dark; the icon reflects the CURRENT theme)
+ * A short fade makes the icon swap feel like a smooth replacement.
+ */
+function updateNavButton() {
+  const btn = document.getElementById('alto-mobile-search-icon') as HTMLElement | null;
+  if (!btn) return;
+  const wantMode = drawerIsOpen() ? 'theme' : 'search';
+  const wantIcon = wantMode === 'search' ? 'search' : isDark() ? 'sun' : 'moon';
+  // Guard on a state flag we control — NOT on innerHTML, which the browser
+  // re-serializes, so a string compare never matches and the observer that
+  // watches childList would re-fire forever (infinite loop / freeze).
+  if (btn.dataset.icon === wantIcon) return;
+  btn.dataset.icon = wantIcon;
+  btn.dataset.mode = wantMode;
+  btn.setAttribute(
+    'aria-label',
+    wantMode === 'search' ? 'Search' : isDark() ? 'Switch to light mode' : 'Switch to dark mode',
+  );
+  // Instant swap; the fresh <svg> fades/scales in via a CSS animation, so the
+  // smoothness doesn't depend on a JS timer racing with drawer-animation mutations.
+  btn.innerHTML = wantMode === 'search' ? ICON_SEARCH : isDark() ? ICON_SUN : ICON_MOON;
+}
+
 function createSearchIcon(): HTMLButtonElement {
   const btn = document.createElement('button');
   btn.id = 'alto-mobile-search-icon';
   btn.type = 'button';
+  btn.dataset.mode = 'search';
   btn.setAttribute('aria-label', 'Search');
-  btn.innerHTML =
-    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
-    'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-    '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
+  btn.innerHTML = ICON_SEARCH;
   btn.addEventListener('click', () => {
-    // The hamburger reflects the drawer state via aria-expanded. Only open it if
-    // it's currently closed (otherwise clicking would close it); then focus the
-    // drawer's search field — immediately if already open, else after the open
-    // animation settles.
-    const ham = document.querySelector<HTMLElement>('.navbar__toggle');
-    const isOpen = ham?.getAttribute('aria-expanded') === 'true';
-    if (!isOpen) ham?.click();
-    window.setTimeout(
-      () => {
-        const ds = document.querySelector<HTMLInputElement>('.dx-drawer-search input');
-        if (ds) {
-          ds.focus();
-          ds.select();
-        }
-      },
-      isOpen ? 0 : 360,
-    );
+    if (btn.dataset.mode === 'theme') {
+      // Toggle color mode via Docusaurus's own (mobile-hidden) toggle button.
+      document
+        .querySelector<HTMLElement>('.navbar [class*="colorModeToggle"] button')
+        ?.click();
+      return;
+    }
+    // search mode (drawer closed): open the drawer, then focus its search field
+    // after the open animation settles.
+    document.querySelector<HTMLElement>('.navbar__toggle')?.click();
+    window.setTimeout(() => {
+      const ds = document.querySelector<HTMLInputElement>('.dx-drawer-search input');
+      if (ds) {
+        ds.focus();
+        ds.select();
+      }
+    }, 360);
   });
   return btn;
 }
@@ -76,10 +117,20 @@ function attachSearchIcon() {
 function wireSearchIcon() {
   if (typeof document === 'undefined') return;
   attachSearchIcon();
+  updateNavButton();
   if (!searchIconObserver && typeof MutationObserver !== 'undefined') {
-    // Re-attach if a navbar re-render drops the injected icon.
-    searchIconObserver = new MutationObserver(attachSearchIcon);
-    searchIconObserver.observe(document.body, { childList: true, subtree: true });
+    // Re-attach if a navbar re-render drops the icon, and morph it (search ⇄
+    // theme) when the hamburger's aria-expanded flips (drawer open/close).
+    searchIconObserver = new MutationObserver(() => {
+      attachSearchIcon();
+      updateNavButton();
+    });
+    searchIconObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['aria-expanded'],
+    });
   }
   searchIconWired = true;
 }
@@ -157,8 +208,12 @@ let themeObserver: MutationObserver | null = null;
 function startThemeColor() {
   syncThemeColor();
   if (!themeObserver && typeof MutationObserver !== 'undefined') {
-    // Re-sync whenever the user flips the light/dark toggle.
-    themeObserver = new MutationObserver(syncThemeColor);
+    // Re-sync the meta AND the nav button icon whenever light/dark flips (the
+    // data-theme attribute lives on <html>, outside the body-subtree observer).
+    themeObserver = new MutationObserver(() => {
+      syncThemeColor();
+      updateNavButton();
+    });
     themeObserver.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ['data-theme'],
