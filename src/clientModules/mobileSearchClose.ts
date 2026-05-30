@@ -22,41 +22,65 @@
 
 let searchIconWired = false;
 
-function wireSearchIcon() {
-  if (searchIconWired || typeof document === 'undefined') return;
+function createSearchIcon(): HTMLButtonElement {
+  const btn = document.createElement('button');
+  btn.id = 'alto-mobile-search-icon';
+  btn.type = 'button';
+  btn.setAttribute('aria-label', 'Search');
+  btn.innerHTML =
+    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
+  btn.addEventListener('click', () => {
+    // The hamburger reflects the drawer state via aria-expanded. Only open it if
+    // it's currently closed (otherwise clicking would close it); then focus the
+    // drawer's search field — immediately if already open, else after the open
+    // animation settles.
+    const ham = document.querySelector<HTMLElement>('.navbar__toggle');
+    const isOpen = ham?.getAttribute('aria-expanded') === 'true';
+    if (!isOpen) ham?.click();
+    window.setTimeout(
+      () => {
+        const ds = document.querySelector<HTMLInputElement>('.dx-drawer-search input');
+        if (ds) {
+          ds.focus();
+          ds.select();
+        }
+      },
+      isOpen ? 0 : 360,
+    );
+  });
+  return btn;
+}
 
+let searchIconObserver: MutationObserver | null = null;
+
+// Mount the icon INSIDE the navbar's left items (the hamburger's parent) so it
+// shares the hamburger's containing block — a CSS `absolute right` then yields an
+// exact gap, immune to the fixed-vs-absolute offset that broke body-mounted
+// positioning. A MutationObserver re-attaches it if a navbar re-render drops it.
+function searchIconHost(): HTMLElement | null {
+  // The hamburger's own parent (the navbar's left items) — robust to class-name
+  // differences, and guarantees the same containing block as the hamburger.
+  return document.querySelector<HTMLElement>('.navbar__toggle')?.parentElement ?? null;
+}
+
+function attachSearchIcon() {
+  const host = searchIconHost();
+  if (!host) return;
   let btn = document.getElementById('alto-mobile-search-icon') as HTMLButtonElement | null;
-  if (!btn) {
-    btn = document.createElement('button');
-    btn.id = 'alto-mobile-search-icon';
-    btn.type = 'button';
-    btn.setAttribute('aria-label', 'Search');
-    btn.innerHTML =
-      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
-      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-      '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
-    btn.addEventListener('click', () => {
-      // The hamburger reflects the drawer state via aria-expanded. Only open it
-      // if it's currently closed (otherwise clicking would close it); then focus
-      // the drawer's search field — immediately if already open, or after the
-      // open animation settles.
-      const ham = document.querySelector<HTMLElement>('.navbar__toggle');
-      const isOpen = ham?.getAttribute('aria-expanded') === 'true';
-      if (!isOpen) ham?.click();
-      window.setTimeout(
-        () => {
-          const ds = document.querySelector<HTMLInputElement>('.dx-drawer-search input');
-          if (ds) {
-            ds.focus();
-            ds.select();
-          }
-        },
-        isOpen ? 0 : 360,
-      );
-    });
-    document.body.appendChild(btn);
-  }
+  if (!btn) btn = createSearchIcon();
+  if (btn.parentElement !== host) host.appendChild(btn);
+}
 
+function wireSearchIcon() {
+  if (typeof document === 'undefined') return;
+  attachSearchIcon();
+  if (!searchIconObserver && typeof MutationObserver !== 'undefined') {
+    // Re-attach if a navbar re-render drops the injected icon.
+    searchIconObserver = new MutationObserver(attachSearchIcon);
+    searchIconObserver.observe(document.body, { childList: true, subtree: true });
+  }
   searchIconWired = true;
 }
 

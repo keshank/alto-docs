@@ -750,12 +750,13 @@ kbd[class*='searchHint'] {
   #alto-mobile-search-icon {
     display: grid;
     place-items: center;
-    position: fixed;
-    /* Fixed to the viewport: shift down by the announcement-bar height to stay
-       vertically centered in the navbar (top: var(--...-bar-height)).
-       12px = (58 navbar − 35 button) / 2. */
-    top: calc(var(--docusaurus-announcement-bar-height, 0px) + 12px);
-    right: 50px;            /* left of the 35px hamburger at right:8 */
+    /* Mounted inside .navbar__items--left by mobileSearchClose.ts, so it shares
+       the hamburger's containing block: absolute right gives an exact 12px gap
+       (hamburger is right:8, 35px wide → 8+35+12 = 55). */
+    position: absolute;
+    right: 55px;
+    top: 50%;
+    transform: translateY(-50%);
     width: 35px;
     height: 35px;
     padding: 0;
