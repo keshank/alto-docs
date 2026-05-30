@@ -1227,6 +1227,13 @@ kbd[class*='searchHint'] {
 }
 .dx-drawer .navbar-sidebar__brand { flex-shrink: 0; }
 
+/* On tablet (577-996px) the navbar already shows a full search bar, so the
+   in-drawer search is redundant — hide it there. On mobile (<=576px) the navbar
+   only has a search ICON that opens this drawer, so the in-drawer search stays. */
+@media (min-width: 577px) and (max-width: 996px) {
+  .dx-drawer-search { display: none !important; }
+}
+
 /* Inline search input — types in place, submits to /search?q=... */
 .dx-drawer-search {
   display: flex;
