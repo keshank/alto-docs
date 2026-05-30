@@ -682,8 +682,21 @@ kbd[class*='searchHint'] {
     flex-shrink: 0;
   }
 
-  /* Tablet: compact right-side search (same as desktop, no dropdowns here). */
-  .navbar-search-outer { width: clamp(170px, 26vw, 240px); }
+  /* Tablet: compact right-side search (same as desktop, no dropdowns here).
+     The search-local plugin pins .navbarSearchContainer to position:absolute;
+     right:13px at narrow widths, which lands it UNDER the absolutely-positioned
+     theme toggle (right:59) and hamburger (right:12). Re-anchor it to the LEFT
+     of both 35px boxes: they span out to right:94, so right:104 leaves a 10px
+     gap and no overlap. */
+  .navbar-search-outer {
+    width: clamp(160px, 24vw, 230px);
+    position: absolute !important;
+    right: 104px !important;
+    left: auto !important;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0 !important;
+  }
   .navbar__search,
   .navbar__search-input {
     width: 100% !important;
