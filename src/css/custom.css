@@ -316,6 +316,13 @@ div[class*='announcementBar'] {
   width: 100%;
   max-width: 100%;
 }
+/* The plugin wraps the input in a span (.searchBarLeft) that shrinks on hover/
+   interaction, which made the whole bar visibly retract. Pin it full-width so
+   the search bar never changes size. */
+.navbar__search [class*='searchBarLeft'] {
+  width: 100% !important;
+  max-width: 100% !important;
+}
 /* Plugin sets `.searchInput:focus { outline: 2px solid red }` via CSS module — kill it */
 input[class*='searchInput']:focus,
 input[class*='searchInput']:focus-visible {
