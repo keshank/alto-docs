@@ -269,7 +269,7 @@ export default function NavbarMobileSidebarLayout({header}: Props): ReactNode {
           </svg>
         </a>
         <div className="dx-drawer-foot-meta">
-          Alto Docs · v3.2 · © {new Date().getFullYear()}
+          Alto Docs · v0.1 · © {new Date().getFullYear()}
         </div>
       </div>
     </div>
