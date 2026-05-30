@@ -204,6 +204,19 @@ div[class*='announcementBar'] {
 [class*='announcementBar_'] [class*='closeButton'] svg {
   fill: currentColor;
 }
+/* On small screens the long announcement text wraps hard at 13px and the
+   "Read what's new →" link splits mid-phrase. Shrink the type, tighten the
+   leading, and keep the link on one line so it wraps as a clean unit. */
+@media (max-width: 576px) {
+  [class*='announcementBar_'] [class*='announcementBarContent'] {
+    font-size: 11.5px;
+    line-height: 1.4;
+    padding: 6px 10px !important;
+  }
+  [class*='announcementBar_'] [class*='announcementBarContent'] a {
+    white-space: nowrap;
+  }
+}
 /* Page content sits below both the announcement bar and the navbar */
 #__docusaurus {
   padding-top: calc(var(--docusaurus-announcement-bar-height, 0px) + var(--ifm-navbar-height));
