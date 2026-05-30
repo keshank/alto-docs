@@ -2,12 +2,11 @@
  * Navbar client behaviours (three small, independent concerns: mobile search
  * expand/close, announcement-bar height sync, and a theme-color meta).
  *
- * 1) Mobile search expand/close. On mobile (<= 576px) the navbar search is
- *    collapsed to a 35x35 icon by CSS. Tapping it focuses the search input;
- *    this module toggles `body.alto-search-open` on focus/blur (CSS expands the
- *    input to fill the navbar) and injects a single 35x35 close (X) button into
- *    <body> so there's an obvious dismiss affordance. The button lives outside
- *    the Docusaurus React tree so navbar re-renders never wipe it.
+ * 1) Mobile search icon. On mobile (<= 576px) the navbar's plugin search is
+ *    hidden (CSS) and we inject a single search-icon button into <body> (outside
+ *    the React tree so navbar re-renders can't wipe it). Tapping it opens the
+ *    hamburger drawer and focuses the drawer's own search field — the drawer is
+ *    the single search surface on mobile (no in-navbar expand/overlay).
  *
  * 2) Announcement-bar height sync. The layout (fixed navbar + content padding +
  *    fixed doc sidebar) is keyed to `--docusaurus-announcement-bar-height`.
@@ -21,54 +20,44 @@
  * All visual styling lives in custom.css; this module only handles behaviour.
  */
 
-let wired = false;
+let searchIconWired = false;
 
-function wire() {
-  if (wired || typeof document === 'undefined') return;
+function wireSearchIcon() {
+  if (searchIconWired || typeof document === 'undefined') return;
 
-  const input = document.querySelector<HTMLInputElement>('.navbar__search-input');
-  if (!input) return; // navbar/search not mounted yet — try again on next route update
-
-  let btn = document.getElementById('alto-mobile-search-close') as HTMLButtonElement | null;
+  let btn = document.getElementById('alto-mobile-search-icon') as HTMLButtonElement | null;
   if (!btn) {
     btn = document.createElement('button');
-    btn.id = 'alto-mobile-search-close';
+    btn.id = 'alto-mobile-search-icon';
     btn.type = 'button';
-    btn.setAttribute('aria-label', 'Close search');
+    btn.setAttribute('aria-label', 'Search');
     btn.innerHTML =
       '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
-      'stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">' +
-      '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
-    // mousedown (not click) so it fires before the input's blur — otherwise the
-    // blur would collapse the search and the click would land on nothing.
-    btn.addEventListener('mousedown', (e) => {
-      e.preventDefault();
-      input!.value = '';
-      input!.blur();
+      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
+    btn.addEventListener('click', () => {
+      // The hamburger reflects the drawer state via aria-expanded. Only open it
+      // if it's currently closed (otherwise clicking would close it); then focus
+      // the drawer's search field — immediately if already open, or after the
+      // open animation settles.
+      const ham = document.querySelector<HTMLElement>('.navbar__toggle');
+      const isOpen = ham?.getAttribute('aria-expanded') === 'true';
+      if (!isOpen) ham?.click();
+      window.setTimeout(
+        () => {
+          const ds = document.querySelector<HTMLInputElement>('.dx-drawer-search input');
+          if (ds) {
+            ds.focus();
+            ds.select();
+          }
+        },
+        isOpen ? 0 : 360,
+      );
     });
     document.body.appendChild(btn);
   }
 
-  input.addEventListener('focus', () => document.body.classList.add('alto-search-open'));
-  input.addEventListener('blur', () => document.body.classList.remove('alto-search-open'));
-
-  wired = true;
-}
-
-// Docusaurus fires this after each client-side route change; the first call
-// after hydration is when the navbar input is reliably present.
-//
-// The search input is rendered asynchronously by the search-local plugin, so a
-// single attempt on load can run too early and bail. ensureWired() retries on a
-// short bounded interval until the input exists (or it gives up after ~3s), so a
-// direct page load wires reliably without depending on a later route change.
-let attempts = 0;
-function ensureWired() {
-  if (wired) return;
-  wire();
-  if (!wired && attempts++ < 25) {
-    setTimeout(ensureWired, 120);
-  }
+  searchIconWired = true;
 }
 
 /* ── Behaviour 2: keep --docusaurus-announcement-bar-height accurate ───────── */
@@ -154,15 +143,14 @@ function startThemeColor() {
 }
 
 export function onRouteDidUpdate() {
-  attempts = 0;
-  ensureWired();
+  wireSearchIcon();
   syncAnnouncementBar();
   syncThemeColor();
 }
 
 if (typeof window !== 'undefined') {
   const init = () => {
-    ensureWired();
+    wireSearchIcon();
     startBarSync();
     startThemeColor();
   };

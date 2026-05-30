@@ -628,12 +628,10 @@ kbd[class*='searchHint'] {
 
 }
 
-/* Mobile search close-X is injected into <body> on every viewport by
-   mobileSearchClose.ts. Hide it globally by default; it's only revealed on
-   mobile while search is open (see the rule inside the <=576px block). Without
-   this global hide it renders as a stray static button below the footer on
-   desktop/tablet, adding blank body height. */
-#alto-mobile-search-close { display: none; }
+/* The mobile search-icon is injected into <body> on every viewport by
+   mobileSearchClose.ts. Hide it globally by default; it's only shown inside the
+   <=576px block. Without this it would render as a stray button on desktop/tablet. */
+#alto-mobile-search-icon { display: none; }
 
 /* ---- MOBILE (<= 576px) ---- */
 @media (max-width: 576px) {
@@ -740,112 +738,36 @@ kbd[class*='searchHint'] {
      drawer (see the drawer footer). Right side = search + hamburger only. ── */
   .navbar [class*='colorModeToggle'] { display: none !important; }
 
-  /* ── Search: a small bar on the right, just left of the hamburger. Tapping it
-     focuses the input, which mobileSearchClose.ts expands to fill the navbar
-     (with a close-X) so there's room to type and read results. ── */
-  .navbar-search-outer {
-    position: absolute;
-    right: 50px;            /* sits left of the 35px hamburger at right:8 */
-    left: auto;
-    top: 50%;
-    transform: translateY(-50%);
-    width: clamp(100px, 32vw, 180px);
-    margin: 0;
-    z-index: 6;
-  }
-  .navbar__search { width: 100% !important; max-width: 100% !important; }
-  .navbar__search-input {
-    box-sizing: border-box;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    height: 36px;
-    padding: 0 8px 0 30px !important;   /* left room for the magnifier */
-    font-size: 12px !important;
-    color: var(--alto-ink-700) !important;
-    caret-color: var(--alto-accent);
-    cursor: text;
-    border: 1px solid var(--alto-border) !important;
-    background: var(--alto-paper) !important;
-    border-radius: var(--alto-r-md) !important;
-    transition: none;
-  }
-  .navbar__search-input::placeholder { color: var(--alto-ink-400) !important; font-size: 12px !important; }
-  .navbar__search::before { left: 10px; transform: translateY(-50%); pointer-events: none; }
-  /* No ⌘K hint, and no plugin inline clear-X (we provide a larger external close-X) */
+  /* ── Search: the plugin's navbar search is hidden on mobile. A 35×35 search-
+     icon button (#alto-mobile-search-icon, injected into <body> by
+     mobileSearchClose.ts) sits left of the hamburger; tapping it opens the
+     drawer and focuses the drawer's own search field. ── */
+  .navbar-search-outer { display: none !important; }
   div[class*='searchHintContainer'],
   kbd[class*='searchHint'],
   .navbar__search [class*='searchClearButton'] { display: none !important; }
 
-  /* (Close-X hidden globally above; the body.alto-search-open rule below reveals it.) */
-
-  /* ── Expanded state: input fills the navbar; logo/pill/toggle/hamburger hide; X appears ── */
-  body.alto-search-open .navbar__brand,
-  body.alto-search-open .navbar-lockup-item,
-  body.alto-search-open .navbar__toggle,
-  body.alto-search-open .navbar [class*='colorModeToggle'] {
-    visibility: hidden;
-  }
-  /* Expanded: symmetric left/right margins so the field is centered in the
-     navbar (not left-aligned). The close-X sits just past the right margin
-     (it's at right:8px, a 35px box, so the 52px margin clears it). */
-  body.alto-search-open .navbar-search-outer {
-    left: 52px;
-    right: 52px;
-    width: auto;
-  }
-  body.alto-search-open .navbar__search,
-  body.alto-search-open .navbar__search-input {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-  }
-  body.alto-search-open .navbar__search-input {
-    padding: 0 14px 0 38px !important;
-    font-size: 15px !important;
-    color: var(--alto-ink-900) !important;
-    caret-color: var(--alto-accent);
-    cursor: text;
-    background: #fff !important;
-    border-color: var(--alto-border-2) !important;
-    box-shadow: var(--alto-shadow-2);
-  }
-  body.alto-search-open .navbar__search-input::placeholder {
-    color: var(--alto-ink-400) !important;
-    font-size: 15px !important;
-  }
-  body.alto-search-open .navbar__search::before { left: 14px; transform: translateY(-50%); }
-
-  body.alto-search-open #alto-mobile-search-close {
+  #alto-mobile-search-icon {
     display: grid;
     place-items: center;
     position: fixed;
-    /* Fixed to the viewport, so it must shift down by the announcement-bar
-       height to stay vertically centered in the navbar (which sits at
-       top: var(--docusaurus-announcement-bar-height)). 12px = (58 navbar − 35
-       button) / 2. */
+    /* Fixed to the viewport: shift down by the announcement-bar height to stay
+       vertically centered in the navbar (top: var(--...-bar-height)).
+       12px = (58 navbar − 35 button) / 2. */
     top: calc(var(--docusaurus-announcement-bar-height, 0px) + 12px);
-    right: 8px;
+    right: 50px;            /* left of the 35px hamburger at right:8 */
     width: 35px;
     height: 35px;
     padding: 0;
-    border: 1px solid var(--alto-border-2);
-    background: #fff;
+    border: 1px solid var(--alto-border);
+    background: var(--alto-paper);
     border-radius: var(--alto-r-md);
     color: var(--alto-ink-700);
     cursor: pointer;
     z-index: 200;
-    box-shadow: var(--alto-shadow-2);
   }
-  body.alto-search-open #alto-mobile-search-close svg { width: 18px; height: 18px; }
-  body.alto-search-open #alto-mobile-search-close:hover {
-    color: var(--alto-accent);
-    border-color: var(--alto-accent);
-  }
-  [data-theme='dark'] body.alto-search-open #alto-mobile-search-close {
-    background: var(--alto-paper);
-    border-color: var(--alto-border);
-  }
+  #alto-mobile-search-icon:hover { border-color: var(--alto-accent); color: var(--alto-accent); }
+  [data-theme='dark'] #alto-mobile-search-icon { background: var(--alto-paper); border-color: var(--alto-border); }
 
   /* Right items move into mobile hamburger drawer */
   .navbar__items--right .navbar-site-link { display: none; }
