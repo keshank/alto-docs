@@ -240,6 +240,8 @@ div[class*='announcementBar'] {
   padding-right: 0 !important;
   display: inline-flex !important;
   align-items: center;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .navbar-logo-sep {
@@ -504,15 +506,19 @@ kbd[class*='searchHint'] {
 .navbar__item.dropdown {
   padding-left: 4px;
   padding-right: 4px;
+  flex-shrink: 0;
 }
 .navbar-lockup-item + .navbar__item.dropdown { margin-left: 34px; }
 
-/* Label — the link itself. Subtle darken on hover/open/active, never red. */
+/* Label — the link itself. Subtle darken on hover/open/active, never red.
+   nowrap keeps the label + caret on ONE line — without it, a squeezed navbar
+   wraps the caret onto a second row. */
 .navbar-desktop-nav.navbar__link {
   font-size: 14px;
   font-weight: 500;
   color: var(--alto-ink-700);
   padding: 6px 8px;
+  white-space: nowrap;
 }
 .navbar-desktop-nav.navbar__link:hover,
 .navbar-desktop-nav.navbar__link--active,
@@ -587,10 +593,29 @@ kbd[class*='searchHint'] {
   background: var(--alto-accent-tint);
   color: var(--alto-accent);
 }
-/* On narrower desktops, hide the secondary "altomotors.in" link so the nav +
-   search fit comfortably. */
-@media (min-width: 997px) and (max-width: 1180px) {
-  .navbar-site-link { display: none !important; }
+/* ── Adaptive desktop nav (997px → wide) ──────────────────────────────────────
+   The five dropdowns + search are a lot to fit. As the viewport narrows we shed
+   the optional "altomotors.in" link, then progressively tighten the gaps, label
+   padding, font and search width so the whole bar stays on ONE line down to
+   997px (below which Docusaurus's hamburger drawer takes over).
+   NOTE: the link selector must be `.navbar__items--right .navbar-site-link`
+   (specificity 0,2,0) to beat the broad `.navbar__item { display:inline-block
+   !important }` desktop rule — a plain `.navbar-site-link` ties on specificity
+   and loses on source order, so the link wouldn't actually hide. */
+@media (min-width: 997px) and (max-width: 1320px) {
+  .navbar__items--right .navbar-site-link { display: none !important; }
+}
+@media (min-width: 997px) and (max-width: 1200px) {
+  .navbar-lockup-item + .navbar__item.dropdown { margin-left: 18px; }
+  .navbar__item.dropdown { padding-left: 3px; padding-right: 3px; }
+  .navbar-desktop-nav.navbar__link { padding: 6px 6px; font-size: 13.5px; }
+  .navbar-search-outer { width: clamp(160px, 17vw, 220px); }
+}
+@media (min-width: 997px) and (max-width: 1080px) {
+  .navbar-lockup-item + .navbar__item.dropdown { margin-left: 12px; }
+  .navbar__item.dropdown { padding-left: 2px; padding-right: 2px; }
+  .navbar-desktop-nav.navbar__link { padding: 6px 4px; font-size: 13px; }
+  .navbar-search-outer { width: clamp(150px, 15vw, 200px); }
 }
 
 /* ============================================================
