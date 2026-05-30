@@ -502,10 +502,10 @@ kbd[class*='searchHint'] {
    Then a single deliberate gap after the DOCS pill separates the pill from the
    group. */
 .navbar__item.dropdown {
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 4px;
+  padding-right: 4px;
 }
-.navbar-lockup-item + .navbar__item.dropdown { margin-left: 18px; }
+.navbar-lockup-item + .navbar__item.dropdown { margin-left: 34px; }
 
 /* Label — the link itself. Subtle darken on hover/open/active, never red. */
 .navbar-desktop-nav.navbar__link {
@@ -547,7 +547,7 @@ kbd[class*='searchHint'] {
    overlapping it. The ::before fills that gap with a transparent bridge so
    moving the cursor from the label to the menu doesn't drop the hover. */
 .navbar .dropdown__menu {
-  margin-top: 11px;
+  margin-top: 26px;
   min-width: 224px;
   padding: 6px;
   border: 1px solid var(--alto-border);
@@ -560,8 +560,8 @@ kbd[class*='searchHint'] {
   position: absolute;
   left: 0;
   right: 0;
-  top: -13px;
-  height: 13px;
+  top: -28px;
+  height: 28px;
 }
 [data-theme='dark'] .navbar .dropdown__menu { background: var(--alto-paper); }
 .navbar .dropdown__link {
