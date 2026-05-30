@@ -137,10 +137,9 @@
 /* ============================================================
    BASE
    ============================================================ */
-/* Scale the whole document 20% down. Applied to <html> (not <body>) so the
-   visual viewport reference scales with it — viewport units, fixed elements,
-   and calc() expressions stay consistent. */
-html { zoom: 0.8; }
+/* (Removed the document-wide zoom: 0.8 — the page now renders at its natural
+   100% scale. The zoom caused fixed-vs-absolute positioning and measurement
+   quirks across the navbar/drawer.) */
 body {
   font-family: var(--ifm-font-family-base);
   -webkit-font-smoothing: antialiased;
