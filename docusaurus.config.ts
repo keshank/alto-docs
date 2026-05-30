@@ -105,10 +105,78 @@ const config: Config = {
           className: 'navbar-lockup-item',
           value: '<span class="navbar-logo-sep">/</span><span class="navbar-docs-tag">DOCS</span>',
         },
-        // Search slot — search-local plugin renders <div class="navbar__search"> here
+
+        // ─── Desktop top-nav dropdowns (left). Hidden <=996px (.navbar-desktop-nav)
+        //     — on tablet/mobile the same sections live in the hamburger drawer.
+        //     Keep these in sync with src/data/drawerNav.ts. ───
+        {
+          type: 'dropdown',
+          label: 'Get Started',
+          position: 'left',
+          className: 'navbar-desktop-nav',
+          items: [
+            {label: 'How to install your first motor', to: '/docs/get-started/quickstart'},
+            {label: 'Which motor is right for me?', to: '/docs/get-started/choosing-a-motor'},
+            {label: 'Safety basics', to: '/docs/get-started/safety'},
+            {label: 'Glossary', to: '/docs/reference/glossary'},
+          ],
+        },
+        {
+          type: 'dropdown',
+          label: 'Motors',
+          position: 'left',
+          className: 'navbar-desktop-nav',
+          items: [
+            {label: 'Motors overview', to: '/docs/motors/overview'},
+            {label: 'BLDC — AL57 series', to: '/docs/motors/bldc-al57'},
+            {label: 'BLDC AL86', to: '/docs/motors/bldc-al86'},
+            {label: 'Induction IEC', to: '/docs/motors/induction'},
+            {label: 'Hall sensor', to: '/docs/motors/hall-sensor'},
+            {label: 'Torque curves', to: '/docs/motors/torque-curves'},
+          ],
+        },
+        {
+          type: 'dropdown',
+          label: 'Drivers & Control',
+          position: 'left',
+          className: 'navbar-desktop-nav',
+          items: [
+            {label: 'DRV BL120', to: '/docs/drivers/drv-bl120'},
+            {label: 'DRV BL300', to: '/docs/drivers/drv-bl300'},
+            {label: 'Parameter reference', to: '/docs/drivers/parameter-reference'},
+            {label: 'Modbus', to: '/docs/drivers/modbus'},
+            {label: 'Fault codes', to: '/docs/drivers/fault-codes'},
+          ],
+        },
+        {
+          type: 'dropdown',
+          label: 'Run & Maintain',
+          position: 'left',
+          className: 'navbar-desktop-nav',
+          items: [
+            {label: 'Wiring', to: '/docs/run-maintain/wiring'},
+            {label: 'Maintenance', to: '/docs/run-maintain/maintenance'},
+            {label: 'Troubleshooting', to: '/docs/run-maintain/troubleshooting'},
+            {label: 'Fault codes', to: '/docs/run-maintain/fault-codes'},
+          ],
+        },
+        {
+          type: 'dropdown',
+          label: 'Reference',
+          position: 'left',
+          className: 'navbar-desktop-nav',
+          items: [
+            {label: 'IP ratings', to: '/docs/reference/ip-ratings'},
+            {label: 'IEC frames', to: '/docs/reference/iec-frames'},
+            {label: 'Modbus map', to: '/docs/reference/modbus-map'},
+            {label: 'Glossary', to: '/docs/reference/glossary'},
+          ],
+        },
+
+        // Search slot — moved to the right (compact) so the left side holds the nav.
         {
           type: 'search',
-          position: 'left',
+          position: 'right',
           className: 'navbar-search-outer',
         },
         // altomotors.in link (right)
@@ -117,12 +185,6 @@ const config: Config = {
           position: 'right',
           value: '<a href="https://altomotors.in" class="navbar__item navbar__link navbar-site-link" target="_blank" rel="noopener">altomotors.in ↗</a>',
         },
-
-        // ─── Mobile drawer nav links (hidden on desktop via .navbar-mobile-only) ───
-        { type: 'doc', docId: 'get-started/quickstart',     position: 'right', label: 'Quickstart',      className: 'navbar-mobile-only' },
-        { type: 'doc', docId: 'get-started/choosing-a-motor', position: 'right', label: 'Choosing a motor', className: 'navbar-mobile-only' },
-        { type: 'doc', docId: 'motors/overview',            position: 'right', label: 'Motors',          className: 'navbar-mobile-only' },
-        { type: 'doc', docId: 'run-maintain/fault-codes',   position: 'right', label: 'Fault codes',     className: 'navbar-mobile-only' },
       ],
     },
     docs: {
