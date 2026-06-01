@@ -1,7 +1,8 @@
 ---
+sidebar_position: 3
 id: parameter-reference
 title: Parameter Reference
-sidebar_label: Parameter Reference
+sidebar_label: Parameter reference
 description: Parameter Reference documentation for Alto Motors.
 ---
 

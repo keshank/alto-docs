@@ -1,4 +1,5 @@
 ---
+sidebar_position: 3
 id: safety
 title: Safety basics before you start
 sidebar_label: Safety basics
@@ -8,9 +9,9 @@ tags: [beginner, safety, installation]
 
 # Safety basics before you start
 
-**Reading time:** 4 min · **Difficulty:** Easy
-
 Read this before touching any wiring or mounting hardware.
+
+<DocMeta difficulty="Easy" readTime="4 min read" />
 
 ---
 

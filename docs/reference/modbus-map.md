@@ -1,7 +1,8 @@
 ---
+sidebar_position: 3
 id: modbus-map
 title: Modbus Map
-sidebar_label: Modbus Map
+sidebar_label: Modbus map
 description: Modbus Map documentation for Alto Motors.
 ---
 

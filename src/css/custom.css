@@ -46,8 +46,8 @@
   --ifm-code-background:          #f3efe8;
   --ifm-code-border-radius:       4px;
   --ifm-code-font-size:           13px;
-  --ifm-pre-background:           #0d0d0d;
-  --ifm-pre-color:                #e6e3dd;
+  --ifm-pre-background:           #f6f3ec;
+  --ifm-pre-color:                #2d2b29;
   --ifm-menu-color:               #2d2b29;
   --ifm-menu-color-active:        #D70000;
   --ifm-menu-color-background-active:   #fff5f5;
@@ -83,6 +83,28 @@
   --alto-r-md:          10px;
   --alto-r-lg:          14px;
   --alto-r-pill:        999px;
+
+  /* Code-block surface + window chrome — LIGHT (flipped for dark mode below). */
+  --code-bg:            #f6f3ec;
+  --code-border:        #e6ddcf;
+  --code-title-bg:      #efe9dd;
+  --code-title-color:   #6b6760;
+  --code-title-border:  #e0d8c8;
+  --code-dot:           #c7bda9;
+  --code-copy-bg:       rgba(13,13,13,.04);
+  --code-copy-border:   #d8d0c2;
+  --code-copy-color:    #6b6760;
+  --code-copy-bg-hover: rgba(13,13,13,.08);
+  --code-copy-color-hover: var(--alto-ink-900);
+  --code-text:          #2d2b29;
+
+  /* Named <C> palette — readable on LIGHT surfaces (flipped for dark mode). */
+  --c-coral:  #d9433d;
+  --c-gold:   #a9791a;
+  --c-green:  #1f8a5b;
+  --c-blue:   #2d72c8;
+  --c-amber:  #c1631a;
+  --c-muted:  var(--alto-ink-500);
 }
 
 /* ============================================================
@@ -132,6 +154,28 @@
   --alto-paper-2:       #28282e;
   --alto-border:        #2e2e35;
   --alto-border-2:      #3f3f48;
+
+  /* Code-block surface + window chrome — DARK. */
+  --code-bg:            #0d0d0d;
+  --code-border:        #1c1c1c;
+  --code-title-bg:      #1c1c1c;
+  --code-title-color:   #a09b93;
+  --code-title-border:  #2a2a2a;
+  --code-dot:           #4b4d52;
+  --code-copy-bg:       rgba(255,255,255,.05);
+  --code-copy-border:   #3a3a3a;
+  --code-copy-color:    #a09b93;
+  --code-copy-bg-hover: rgba(255,255,255,.1);
+  --code-copy-color-hover: #e6e3dd;
+  --code-text:          #e6e3dd;
+
+  /* Named <C> palette — bright on DARK surfaces. */
+  --c-coral:  #ff6b6b;
+  --c-gold:   #f0c987;
+  --c-green:  #6ed09b;
+  --c-blue:   #79b8ff;
+  --c-amber:  #e7a45e;
+  --c-muted:  var(--alto-ink-500);
 }
 
 /* ============================================================
@@ -533,7 +577,9 @@ kbd[class*='searchHint'] {
 /* Caret — a thin OUTLINE chevron (not Docusaurus's filled triangle), via an SVG
    mask filled with currentColor. Inverts (rotates 180°) when the menu opens —
    on hover AND click — with a smooth transition, like Supabase. */
-.navbar-desktop-nav.navbar__link::after {
+/* Only dropdown toggles get the chevron — a plain link (e.g. a root-level doc
+   with no sub-items) must not show one. */
+.navbar__item.dropdown > .navbar-desktop-nav.navbar__link::after {
   content: '';
   display: inline-block;
   width: 13px;
@@ -1749,46 +1795,321 @@ kbd[class*='searchHint'] {
 }
 
 /* ============================================================
-   TABLE OF CONTENTS
+   TABLE OF CONTENTS  ("On this page" — swizzled @theme/TOC)
    ============================================================ */
-.table-of-contents {
+.alto-toc {
+  position: sticky;
+  top: calc(var(--docusaurus-announcement-bar-height, 0px) + var(--ifm-navbar-height) + 16px);
+  max-height: calc(100vh - var(--ifm-navbar-height) - 4rem);
+  overflow-y: auto;
   font-size: 13px;
-  border-left: 2px solid var(--alto-border);
 }
-.table-of-contents__link {
+/* Title */
+.alto-toc-title {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 11px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--alto-ink-500);
+  margin: 0 0 14px;
+}
+/* List + the light track; the red indicator slides over it. */
+.alto-toc-list { position: relative; }
+.alto-toc-list .table-of-contents {
+  border-left: 1.5px solid var(--alto-border);
+  padding: 0; margin: 0; font-size: 13px;
+}
+.alto-toc-list .table-of-contents .table-of-contents { /* nested sub-items */
+  border-left: 0;
+}
+.alto-toc-thumb {
+  position: absolute; left: -0.75px; top: 0;
+  width: 2px; border-radius: 2px;
+  background: var(--alto-accent);
+  opacity: 0;
+  transition: transform .28s cubic-bezier(.4,0,.2,1), height .28s cubic-bezier(.4,0,.2,1), opacity .2s;
+  pointer-events: none;
+}
+.alto-toc .table-of-contents__link {
   display: block;
   padding: 6px 14px;
   color: var(--alto-ink-500);
-  margin-left: -2px;
-  border-left: 2px solid transparent;
-  transition: color .12s, border-color .12s;
-  font-size: 13px;
+  border-left: 0; margin: 0;
+  transition: color .12s;
 }
-.table-of-contents__link:hover { color: var(--alto-ink-900); }
-.table-of-contents__link--active {
-  color: var(--alto-accent) !important;
-  border-left-color: var(--alto-accent);
-  font-weight: 600;
+.alto-toc .table-of-contents li li .table-of-contents__link { padding-left: 28px; }
+.alto-toc .table-of-contents__link:hover { color: var(--alto-ink-900); }
+.alto-toc .table-of-contents__link--active { color: var(--alto-accent) !important; font-weight: 600; }
+
+/* Footer — Suggest an edit + (disabled) Ask Alto AI */
+.alto-toc-foot {
+  display: flex; flex-direction: column; gap: 10px;
+  margin: 18px 0 0 14px; padding: 14px 0 0;
+  border-top: 1px solid var(--alto-border);
 }
+.alto-toc-foot-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: inherit; font-size: 12.5px; color: var(--alto-ink-500);
+  text-decoration: none !important; border: 0 !important;
+  background: none; padding: 0; text-align: left; cursor: pointer;
+  transition: color .12s;
+}
+.alto-toc-foot-link svg { flex-shrink: 0; color: var(--alto-ink-400); }
+.alto-toc-foot-link:not(.is-disabled):hover { color: var(--alto-accent); }
+.alto-toc-foot-link:not(.is-disabled):hover svg { color: var(--alto-accent); }
+.alto-toc-foot-link.is-disabled { color: var(--alto-ink-400); cursor: not-allowed; }
+.alto-soon {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 9px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--alto-ink-500);
+  background: var(--alto-paper-2);
+  border: 1px solid var(--alto-border);
+  border-radius: var(--alto-r-pill);
+  padding: 1px 6px;
+}
+
+/* AI Tools group (Copy as Markdown / Ask ChatGPT / Ask Claude) */
+.alto-ai-tools {
+  display: flex; flex-direction: column; gap: 11px;
+  margin-top: 4px;
+}
+.alto-ai-title {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 11px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--alto-ink-500);
+  margin-bottom: 1px;
+}
+.alto-ai-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: inherit; font-size: 12.5px; color: var(--alto-ink-700);
+  background: none; border: 0; padding: 0; text-align: left; cursor: pointer;
+  transition: color .12s;
+}
+.alto-ai-link svg { flex-shrink: 0; color: var(--alto-ink-400); transition: color .12s; }
+.alto-ai-link:hover { color: var(--alto-accent); }
+.alto-ai-link:hover svg { color: var(--alto-accent); }
+
+/* ============================================================
+   "Suggest an edit" modal (<SuggestEdit>)
+   ============================================================ */
+.alto-modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  background: rgba(13, 13, 13, 0.45);
+  -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+  animation: alto-fade-in .15s ease;
+}
+.alto-modal {
+  position: relative;
+  width: 100%; max-width: 460px;
+  max-height: calc(100vh - 40px); overflow-y: auto;
+  background: var(--ifm-background-color);
+  border: 1px solid var(--alto-border);
+  border-radius: var(--alto-r-lg);
+  box-shadow: var(--alto-shadow-3);
+  padding: 26px 26px 24px;
+  animation: alto-pop-in .18s cubic-bezier(.4,0,.2,1);
+}
+@keyframes alto-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes alto-pop-in { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
+.alto-modal h3 {
+  font-family: var(--ifm-heading-font-family);
+  font-size: 22px; font-weight: 500; color: var(--alto-ink-900);
+  letter-spacing: -0.02em; margin: 0 0 6px;
+}
+.alto-modal-sub { font-size: 14px; color: var(--alto-ink-500); margin: 0 0 18px; line-height: 1.5; }
+.alto-modal-close {
+  position: absolute; top: 12px; right: 12px;
+  width: 30px; height: 30px; display: grid; place-items: center;
+  background: none; border: 0; border-radius: var(--alto-r-sm);
+  font-size: 22px; line-height: 1; color: var(--alto-ink-400); cursor: pointer;
+  transition: background .12s, color .12s;
+}
+.alto-modal-close:hover { background: var(--alto-paper-2); color: var(--alto-ink-900); }
+.alto-field { display: block; margin-bottom: 14px; }
+.alto-field > span {
+  display: block; margin-bottom: 5px;
+  font-size: 12px; font-weight: 600; color: var(--alto-ink-700);
+}
+.alto-field input,
+.alto-field textarea {
+  width: 100%; box-sizing: border-box;
+  font-family: var(--ifm-font-family-base); font-size: 14px;
+  color: var(--alto-ink-900); background: var(--alto-bg);
+  border: 1px solid var(--alto-border-2); border-radius: var(--alto-r-sm);
+  padding: 9px 12px; transition: border-color .12s, box-shadow .12s;
+}
+[data-theme='dark'] .alto-field input,
+[data-theme='dark'] .alto-field textarea { background: var(--alto-paper); }
+.alto-field textarea { resize: vertical; line-height: 1.5; }
+.alto-field input:focus,
+.alto-field textarea:focus {
+  outline: 0; border-color: var(--alto-accent);
+  box-shadow: 0 0 0 3px rgba(215, 0, 0, 0.14);
+}
+.alto-modal-submit { width: 100%; margin-top: 4px; }
+.alto-modal-submit[disabled] { opacity: .6; cursor: default; }
+/* Thank-you state */
+.alto-modal-thanks { text-align: center; padding: 8px 4px 4px; }
+.alto-modal-thanks-mark {
+  width: 52px; height: 52px; margin: 0 auto 14px;
+  display: grid; place-items: center;
+  background: #e9f5ee; color: #1f8a5b;
+  border-radius: 50%; font-size: 26px; font-weight: 700;
+}
+[data-theme='dark'] .alto-modal-thanks-mark { background: rgba(31,138,91,.18); color: #6ed09b; }
+.alto-modal-thanks h3 { margin-bottom: 8px; }
+.alto-modal-thanks p { font-size: 14px; color: var(--alto-ink-500); line-height: 1.55; margin: 0 0 18px; }
 
 /* ============================================================
    DOC CONTENT
    ============================================================ */
+/* Constrain the reading column to a comfortable measure (matches the
+   reference's ~780px column). Applies to breadcrumbs, content and the
+   prev/next pager alike since they share this container. */
+[class*='docItemContainer'] {
+  max-width: 780px;
+  padding-bottom: 64px;
+}
+
 .markdown { line-height: 1.7; color: var(--alto-ink-700); }
 .markdown h1 {
-  font-size: 44px; line-height: 1.1; letter-spacing: -0.024em;
+  font-size: 44px; font-weight: 500; line-height: 1.1; letter-spacing: -0.024em;
   color: var(--alto-ink-900); margin-bottom: 14px;
 }
+/* H2 — no underline. */
 .markdown h2 {
   font-size: 28px; font-weight: 500; line-height: 1.2;
   letter-spacing: -0.018em; color: var(--alto-ink-900);
   margin-top: 48px; margin-bottom: 14px;
-  padding-bottom: 10px; border-bottom: 1px solid var(--alto-border);
 }
 .markdown h3 {
   font-size: 20px; font-weight: 600; letter-spacing: -0.01em;
   color: var(--alto-ink-900); margin-top: 32px; margin-bottom: 10px;
 }
+/* The "#" marker IS Docusaurus's direct-link anchor, moved to the FRONT and
+   shown always (instead of the hover-only trailing one). Click it to copy a
+   link to that heading. */
+.markdown h2, .markdown h3 {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
+}
+.markdown :is(h2, h3) > .hash-link {
+  order: -1;          /* sit ahead of the heading text */
+  opacity: 1;         /* always visible — it's the marker now */
+  padding: 0;
+  color: var(--alto-ink-300);
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: none !important;   /* no red underline */
+  transition: color .12s;
+}
+.markdown :is(h2, h3) > .hash-link:hover { color: var(--alto-accent); }
+
+/* When a heading is jumped to (clicked #, or a TOC/anchor link), offset it
+   clear of the fixed header. Both the announcement bar and navbar are fixed,
+   so account for both — the announcement-bar var drops to 0 when dismissed,
+   so the offset stays correct either way. */
+.markdown :is(h1, h2, h3, h4, h5, h6) {
+  scroll-margin-top: calc(
+    var(--docusaurus-announcement-bar-height, 0px) + var(--ifm-navbar-height) + 20px
+  );
+}
+/* Lede — the intro paragraph immediately after the page H1. */
+.markdown > h1 + p {
+  font-size: 17px; line-height: 1.6; color: var(--alto-ink-500);
+  margin-top: 12px; margin-bottom: 16px;
+}
+
+/* ---- Meta pill row (<DocMeta>) ---- */
+.alto-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 8px; }
+.alto-meta-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 26px; padding: 0 11px;
+  background: var(--alto-paper); border: 1px solid var(--alto-border);
+  border-radius: var(--alto-r-pill);
+  font-family: var(--ifm-font-family-base);
+  font-size: 12.5px; font-weight: 500; line-height: 1;
+  color: var(--alto-ink-500);
+}
+.alto-meta-pill svg { flex-shrink: 0; }
+.alto-meta-pill.easy { background: #e9f5ee; border-color: #c5e3d3; color: #1f6c4a; }
+.alto-meta-pill.med  { background: #fff5e0; border-color: #f1e0b8; color: #7a4900; }
+.alto-meta-pill.adv,
+.alto-meta-pill.updated {
+  background: var(--alto-accent-tint); border-color: #f7c8c8; color: var(--alto-accent-hover);
+}
+[data-theme='dark'] .alto-meta-pill { background: var(--alto-paper); border-color: var(--alto-border); }
+[data-theme='dark'] .alto-meta-pill.easy { background: rgba(31,138,91,.18); border-color: rgba(31,138,91,.32); color: #6ed09b; }
+[data-theme='dark'] .alto-meta-pill.med  { background: rgba(193,99,26,.16); border-color: rgba(193,99,26,.32); color: #e7a45e; }
+[data-theme='dark'] .alto-meta-pill.adv,
+[data-theme='dark'] .alto-meta-pill.updated { background: rgba(255,80,80,.14); border-color: rgba(255,80,80,.28); color: #ff8a8a; }
+
+/* ---- Inline colour / highlight (<C> / <Color>) — colour set inline from MD ---- */
+.alto-color--bg {
+  padding: 1px 6px;
+  border-radius: var(--alto-r-sm);
+}
+
+/* General rule: a RAW colour (e.g. <C c="#16a34a">) is taken as the light-mode
+   value and auto-adapted for dark mode — text auto-lightens, a highlight bg
+   auto-darkens — so authored colours stay legible in both themes. Named
+   palette colours skip this (they already have explicit per-theme values).
+   Relative-colour syntax; unsupported browsers fall back to the raw value. */
+.alto-color--fg-auto { color: var(--ac-fg); }
+.alto-color--bg-auto { background: var(--ac-bg); }
+[data-theme='dark'] .alto-color--fg-auto {
+  color: oklch(from var(--ac-fg) clamp(0.6, calc(l + 0.2), 0.92) c h);
+}
+[data-theme='dark'] .alto-color--bg-auto {
+  background: oklch(from var(--ac-bg) clamp(0.16, calc(l - 0.55), 0.42) c h);
+}
+
+/* ---- "In plain English" callout (<Plain>) — dashed box + pill label ---- */
+.alto-plain {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: var(--alto-paper);
+  border: 1px dashed var(--alto-border-2);
+  border-radius: var(--alto-r-md);
+  padding: 12px 14px;
+  margin: 16px 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--alto-ink-500);
+}
+.alto-plain-label {
+  flex-shrink: 0;
+  background: #fff;
+  border: 1px solid var(--alto-border);
+  border-radius: var(--alto-r-sm);
+  padding: 3px 7px;
+  font-family: var(--ifm-font-family-base);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--alto-ink-500);
+  white-space: nowrap;
+}
+.alto-plain-body {
+  min-width: 0;
+  padding-top: 1px;
+}
+.alto-plain-body > :last-child { margin-bottom: 0; }
+[data-theme='dark'] .alto-plain { background: var(--alto-paper); border-color: var(--alto-border-2); }
+[data-theme='dark'] .alto-plain-label { background: var(--alto-paper-2); border-color: var(--alto-border); }
+
+/* ---- Colour swatch (<Swatch>) for wire/colour tables ---- */
+.alto-swatch-wrap { display: inline-flex; align-items: center; gap: 8px; }
+.alto-swatch {
+  width: 15px; height: 15px; border-radius: 4px;
+  border: 1px solid rgba(13,13,13,.18); flex-shrink: 0; display: inline-block;
+}
+[data-theme='dark'] .alto-swatch { border-color: rgba(255,255,255,.22); }
 .markdown p { font-size: 16.5px; line-height: 1.7; color: var(--alto-ink-700); margin-bottom: 14px; }
 .markdown a {
   color: var(--alto-accent); font-weight: 500;
@@ -1798,26 +2119,233 @@ kbd[class*='searchHint'] {
 .markdown a:hover { border-bottom-color: var(--alto-accent); }
 [data-theme='dark'] .markdown a { border-bottom-color: rgba(255,80,80,.3); }
 
-/* Inline code */
-.markdown code {
+/* Inline code — scoped to NOT touch code blocks (the <code> inside <pre>). */
+.markdown :not(pre) > code {
   font-size: 13.5px; background: var(--alto-paper-2);
   padding: 2px 6px; border-radius: 4px;
   color: var(--alto-ink-900); border: 1px solid var(--alto-border);
 }
 
-/* Code blocks */
+/* Code blocks — surface + chrome follow the theme (light in light mode, dark
+   in dark mode). Syntax colours come from the Prism theme (github / vsDark). */
 div[class*='codeBlockContainer'] {
   box-shadow: var(--alto-shadow-2);
   border-radius: var(--alto-r-md);
-  border: 1px solid var(--alto-border);
+  border: 1px solid var(--code-border);
   margin: 18px 0 24px;
   overflow: hidden;
 }
+/* Pin the surface to the theme's code background (overriding the Prism theme's
+   own inline bg) so it always matches the chrome. Token text colours are left
+   to the Prism theme. */
+div[class*='codeBlockContainer'] pre,
+div[class*='codeBlockContent'] {
+  background: var(--code-bg) !important;
+}
+/* Plain ``` fences: theme-aware syntax highlighting. Base text + each token
+   type map to the --c-* / ink variables, which flip between light and dark —
+   so the palette stays legible and visibly varied in BOTH modes (overriding
+   the Prism theme to keep it consistent, not an all-blue block). */
+div[class*='codeBlockContainer'] pre,
+div[class*='codeBlockContainer'] code,
+div[class*='codeBlockContainer'] .token { color: var(--code-text) !important; }
+div[class*='codeBlockContainer'] .token.comment,
+div[class*='codeBlockContainer'] .token.prolog,
+div[class*='codeBlockContainer'] .token.cdata { color: var(--alto-ink-400) !important; font-style: italic; }
+div[class*='codeBlockContainer'] .token.punctuation,
+div[class*='codeBlockContainer'] .token.operator { color: var(--alto-ink-400) !important; }
+div[class*='codeBlockContainer'] .token.keyword,
+div[class*='codeBlockContainer'] .token.tag,
+div[class*='codeBlockContainer'] .token.selector,
+div[class*='codeBlockContainer'] .token.property,
+div[class*='codeBlockContainer'] .token.attr-name,
+div[class*='codeBlockContainer'] .token.parameter,
+div[class*='codeBlockContainer'] .token.variable { color: var(--c-coral) !important; }
+div[class*='codeBlockContainer'] .token.function,
+div[class*='codeBlockContainer'] .token.class-name,
+div[class*='codeBlockContainer'] .token.builtin { color: var(--c-green) !important; }
+div[class*='codeBlockContainer'] .token.string,
+div[class*='codeBlockContainer'] .token.char,
+div[class*='codeBlockContainer'] .token.attr-value,
+div[class*='codeBlockContainer'] .token.regex,
+div[class*='codeBlockContainer'] .token.url,
+div[class*='codeBlockContainer'] .token.inserted { color: var(--c-gold) !important; }
+div[class*='codeBlockContainer'] .token.number,
+div[class*='codeBlockContainer'] .token.boolean,
+div[class*='codeBlockContainer'] .token.constant,
+div[class*='codeBlockContainer'] .token.symbol { color: var(--c-blue) !important; }
 div[class*='codeBlockTitle'] {
   font-family: var(--ifm-font-family-monospace);
   font-size: 11px; letter-spacing: 0.05em;
-  background: #1c1c1c; border-bottom: 1px solid #2a2a2a; color: #a09b93;
+  background: var(--code-title-bg);
+  border-bottom: 1px solid var(--code-title-border);
+  color: var(--code-title-color);
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; padding: 10px 56px; position: relative;
 }
+/* Monochrome window dots on the left of the title bar (one element + box-shadow). */
+div[class*='codeBlockTitle']::before {
+  content: ''; position: absolute; left: 16px; top: 50%;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--code-dot); transform: translateY(-50%);
+  box-shadow: 13px 0 var(--code-dot), 26px 0 var(--code-dot);
+}
+
+/* ---- Copy button — a small "Copy" pill anchored to the title bar's right
+   edge, vertically centred in the 40px bar. Colours follow the theme. */
+div[class*='codeBlockContainer'] { position: relative; }
+div[class*='codeBlockContent'] { position: static; }
+div[class*='codeBlockContainer'] [class*='buttonGroup'] {
+  position: absolute;
+  opacity: 1;
+  top: 10px;
+  right: 12px;
+}
+div[class*='codeBlockContainer'] button.clean-btn {
+  opacity: 1 !important;
+  width: auto; height: auto;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 9px;
+  background: var(--code-copy-bg);
+  border: 1px solid var(--code-copy-border);
+  border-radius: var(--alto-r-sm);
+  color: var(--code-copy-color);
+}
+div[class*='codeBlockContainer'] button.clean-btn:hover {
+  background: var(--code-copy-bg-hover);
+  color: var(--code-copy-color-hover);
+}
+div[class*='codeBlockContainer'] button.clean-btn [class*='copyButtonIcons'] {
+  width: 13px; height: 13px;
+}
+div[class*='codeBlockContainer'] button.clean-btn svg { width: 13px; height: 13px; }
+div[class*='codeBlockContainer'] button.clean-btn::after {
+  content: 'Copy';
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+
+/* ============================================================
+   <Code> — hand-coloured code card (colours set in MD via <C>)
+   Same window as ``` fences; surface/chrome follow the theme.
+   ============================================================ */
+.alto-code {
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: var(--alto-r-md);
+  box-shadow: var(--alto-shadow-2);
+  margin: 18px 0 24px;
+  overflow: hidden;
+  font-family: var(--ifm-font-family-monospace);
+}
+.alto-code-head {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--code-title-bg); border-bottom: 1px solid var(--code-title-border);
+  color: var(--code-title-color); font-size: 11px; letter-spacing: 0.05em;
+  padding: 10px 56px;
+}
+.alto-code-dots {
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--code-dot); box-shadow: 13px 0 var(--code-dot), 26px 0 var(--code-dot);
+}
+.alto-code-copy {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 9px;
+  background: var(--code-copy-bg);
+  border: 1px solid var(--code-copy-border); border-radius: var(--alto-r-sm);
+  color: var(--code-copy-color); font-family: var(--ifm-font-family-monospace);
+  font-size: 11px; letter-spacing: 0.02em; cursor: pointer;
+}
+.alto-code-copy:hover { background: var(--code-copy-bg-hover); color: var(--code-copy-color-hover); }
+.alto-code-body {
+  margin: 0; padding: 14px 18px;
+  background: var(--code-bg); color: var(--code-text);
+  font-size: 13px; line-height: 1.75;
+  white-space: pre; overflow-x: auto;
+}
+.alto-code-body code {
+  font-family: inherit; background: none; border: 0; padding: 0;
+  color: inherit; font-size: inherit;
+}
+.alto-code-line { display: block; }
+
+/* ============================================================
+   ADMONITIONS / CALLOUTS
+   Left-accent bar + soft tint + coloured heading, per the reference.
+   ============================================================ */
+.theme-admonition {
+  border: 1px solid var(--alto-border);
+  border-left: 3px solid var(--alto-ink-400);
+  border-radius: var(--alto-r-md);
+  box-shadow: var(--alto-shadow-1);
+  margin: 22px 0;
+  padding: 0;
+}
+.theme-admonition [class*='admonitionHeading'] {
+  font-family: var(--ifm-heading-font-family);
+  font-size: 14px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.04em;
+  padding: 12px 16px 6px;
+  margin: 0;
+}
+.theme-admonition [class*='admonitionHeading'] svg,
+.theme-admonition [class*='admonitionIcon'] svg {
+  fill: currentColor;
+}
+.theme-admonition [class*='admonitionContent'] {
+  padding: 0 16px 14px;
+  color: var(--alto-ink-700);
+}
+.theme-admonition [class*='admonitionContent'] > :last-child { margin-bottom: 0; }
+
+/* note (secondary) — neutral */
+.theme-admonition-note {
+  background: var(--alto-paper);
+  border-left-color: var(--alto-ink-400);
+}
+.theme-admonition-note [class*='admonitionHeading'] { color: var(--alto-ink-700); }
+
+/* tip (success) — green */
+.theme-admonition-tip {
+  background: #f5fbf7;
+  border-left-color: #1f8a5b;
+}
+.theme-admonition-tip [class*='admonitionHeading'] { color: #166c47; }
+
+/* info — blue */
+.theme-admonition-info {
+  background: #f2f8fd;
+  border-left-color: #2d72c8;
+}
+.theme-admonition-info [class*='admonitionHeading'] { color: #1c5394; }
+
+/* warning / caution — amber (matches the home "med" pill family) */
+.theme-admonition-warning,
+.theme-admonition-caution {
+  background: #fff8ed;
+  border-left-color: #c1631a;
+}
+.theme-admonition-warning [class*='admonitionHeading'],
+.theme-admonition-caution [class*='admonitionHeading'] { color: #7a4900; }
+
+/* danger — Alto red */
+.theme-admonition-danger {
+  background: var(--alto-accent-tint);
+  border-left-color: var(--alto-accent);
+}
+.theme-admonition-danger [class*='admonitionHeading'] { color: var(--alto-accent-hover); }
+
+/* Dark mode: keep the accent bars, calm the fills */
+[data-theme='dark'] .theme-admonition { background: var(--alto-paper); }
+[data-theme='dark'] .theme-admonition-tip { background: rgba(31,138,91,.10); }
+[data-theme='dark'] .theme-admonition-info { background: rgba(45,114,200,.10); }
+[data-theme='dark'] .theme-admonition-warning,
+[data-theme='dark'] .theme-admonition-caution { background: rgba(193,99,26,.10); }
+[data-theme='dark'] .theme-admonition-danger { background: rgba(215,0,0,.10); }
 
 /* Ordered list with red circles */
 .markdown ol { counter-reset: alto-ol; list-style: none; padding-left: 0; }
@@ -1833,20 +2361,69 @@ div[class*='codeBlockTitle'] {
 .markdown ul > li::marker { color: var(--alto-accent); }
 
 /* Tables */
+/* Horizontal-scroll wrapper (added around every markdown table via
+   src/theme/MDXComponents). Lets wide tables scroll sideways on mobile
+   instead of squishing or overflowing the page. */
+.alto-table-wrap {
+  overflow-x: auto;
+  margin: 18px 0 24px;
+  -webkit-overflow-scrolling: touch;
+}
+.alto-table-wrap > table { margin: 0; }
+
+/* `.markdown table` specificity needed to beat infima's `display: block`
+   (which would otherwise shrink the column grid and bunch it to the left).
+   display:table lets width:100% spread the columns across the column like the
+   design; the .alto-table-wrap handles horizontal scroll on mobile instead. */
+.markdown table,
 table {
+  display: table;
   border-collapse: separate; border-spacing: 0;
-  border: 1px solid var(--alto-border); border-radius: var(--alto-r-md);
-  overflow: hidden; font-size: 14.5px; width: 100%; margin: 18px 0 24px;
+  border: 1px solid var(--alto-border); border-radius: var(--alto-r-lg);
+  overflow: hidden; font-size: 14.5px;
+  /* Full-width on desktop; on small screens the table shrinks to fit and only
+     the wrapper scrolls when the content genuinely can't fit (no forced
+     min-width, so no artificial scroll). */
+  width: 100%; margin: 18px 0 24px;
 }
 table th {
   background: var(--alto-paper);
   font-family: var(--ifm-heading-font-family); font-weight: 600;
   font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em;
-  color: var(--alto-ink-900); padding: 12px 16px;
+  color: var(--alto-ink-900); padding: 15px 18px;
   border-bottom: 1px solid var(--alto-border);
 }
-table td { padding: 12px 16px; border-bottom: 1px solid var(--alto-border); color: var(--alto-ink-700); }
+table td { padding: 15px 18px; border-bottom: 1px solid var(--alto-border); color: var(--alto-ink-700); }
 table tr:last-child td { border-bottom: 0; }
+/* No zebra striping — every body row is the same colour (only the header is
+   tinted), matching the design. Overrides Docusaurus' default striped rows. */
+.markdown table tr,
+.markdown table tr:nth-child(2n) { background-color: transparent; }
+
+/* Terminal chips inside tables — soft, borderless beige chips (per the design),
+   distinct from inline body code. */
+.alto-table-wrap table td code {
+  background: var(--alto-paper-2);
+  border: 0;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 13px;
+  color: var(--alto-ink-800);
+}
+
+/* Small screens — keep it a normal table, just fit it to the screen: shrink
+   type/padding and let cell text wrap (and break long words) so even 3–4
+   column tables fit the width as a proper grid instead of scrolling. The
+   wrapper still scrolls only if content genuinely can't fit. */
+@media (max-width: 576px) {
+  .markdown table, table { font-size: 13px; }
+  table th, table td {
+    padding: 8px 10px;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+  }
+}
 
 /* ============================================================
    PAGINATION

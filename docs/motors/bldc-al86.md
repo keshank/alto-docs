@@ -1,7 +1,9 @@
 ---
+sidebar_position: 3
 id: bldc-al86
 title: Bldc Al86
-sidebar_label: Bldc Al86
+sidebar_label: BLDC — AL86 series
+nav_tag: NEW
 description: Bldc Al86 documentation for Alto Motors.
 ---
 

@@ -1,4 +1,5 @@
 ---
+sidebar_position: 2
 id: bldc-al57
 title: BLDC — AL57 series
 sidebar_label: BLDC — AL57 series
@@ -8,9 +9,9 @@ tags: [bldc, al57, wiring, datasheet]
 
 # BLDC — AL57 series
 
-**Reading time:** 12 min · **Difficulty:** Medium
-
 The AL57 is Alto's compact BLDC motor range, designed for precise speed control in material handling, pumps, and light industrial applications.
+
+<DocMeta difficulty="Medium" readTime="12 min read" />
 
 ---
 

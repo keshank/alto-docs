@@ -1,7 +1,8 @@
 ---
+sidebar_position: 1
 id: drv-bl120
 title: Drv Bl120
-sidebar_label: Drv Bl120
+sidebar_label: DRV-BL120
 description: Drv Bl120 documentation for Alto Motors.
 ---
 

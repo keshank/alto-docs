@@ -1,7 +1,8 @@
 ---
+sidebar_position: 1
 id: ip-ratings
 title: Ip Ratings
-sidebar_label: Ip Ratings
+sidebar_label: IP ratings
 description: Ip Ratings documentation for Alto Motors.
 ---
 

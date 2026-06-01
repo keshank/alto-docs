@@ -7,9 +7,33 @@ import {
   useNavbarSecondaryMenu,
 } from '@docusaurus/theme-common/internal';
 import {ThemeClassNames} from '@docusaurus/theme-common';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import type {Props} from '@theme/Navbar/MobileSidebar/Layout';
 import MobileDrawerTOC, {useDrawerHeadings} from '../TOC';
-import {DRAWER_NAV, type DrawerGroup} from '../../../../data/drawerNav';
+
+// Mirrors src/nav/buildNav.ts. The data is derived from docs/ at build time
+// and passed through siteConfig.customFields.navTree.
+interface DrawerLeaf {
+  label: string;
+  href: string;
+  tag?: string;
+}
+interface DrawerGroup {
+  kind: 'category';
+  label: string;
+  collapsed: boolean;
+  items: DrawerLeaf[];
+}
+interface DrawerDoc {
+  kind: 'doc';
+  label: string;
+  href: string;
+  tag?: string;
+}
+type NavNode = DrawerGroup | DrawerDoc;
+interface NavTree {
+  nodes: NavNode[];
+}
 
 function SearchBox() {
   const history = useHistory();
@@ -128,6 +152,10 @@ function HomepageNavGroup({
 
 function HomepageNav() {
   const mobileSidebar = useNavbarMobileSidebar();
+  const {siteConfig} = useDocusaurusContext();
+  const navTree = (siteConfig.customFields?.navTree as NavTree | undefined) ?? {
+    nodes: [],
+  };
   const lastGroup = readLastGroup();
   const onLeafClick = (groupLabel: string) => {
     writeLastGroup(groupLabel);
@@ -136,14 +164,27 @@ function HomepageNav() {
   const close = () => mobileSidebar.toggle();
   return (
     <div className="dx-drawer-nav">
-      {DRAWER_NAV.map((g) => (
-        <HomepageNavGroup
-          key={g.label}
-          group={g}
-          defaultOpen={lastGroup === g.label}
-          onLeafClick={onLeafClick}
-        />
-      ))}
+      {navTree.nodes.map((n) =>
+        n.kind === 'category' ? (
+          <HomepageNavGroup
+            key={n.label}
+            group={n}
+            defaultOpen={lastGroup === n.label}
+            onLeafClick={onLeafClick}
+          />
+        ) : (
+          // A root-level doc (no folder/sub-items) reads like a page row, not
+          // a boxed link.
+          <a
+            key={n.href}
+            className="dx-leaf dx-drawer-rootleaf"
+            href={n.href}
+            onClick={close}>
+            <span className="dx-leaf-label">{n.label}</span>
+            {n.tag && <span className="dx-leaf-tag">{n.tag}</span>}
+          </a>
+        ),
+      )}
       <a
         className="dx-drawer-extra-link"
         href="https://altomotors.in"
