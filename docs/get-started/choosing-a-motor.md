@@ -1,4 +1,5 @@
 ---
+sidebar_position: 2
 id: choosing-a-motor
 title: Which motor is right for me?
 sidebar_label: Choosing a motor
@@ -8,9 +9,9 @@ tags: [beginner, selection, bldc, induction]
 
 # Which motor is right for me?
 
-**Reading time:** 8 min · **Difficulty:** Easy
-
 Use this guide to pick the right motor series for your load, duty cycle, and power supply.
+
+<DocMeta difficulty="Easy" readTime="8 min read" />
 
 ---
 

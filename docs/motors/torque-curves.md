@@ -1,7 +1,8 @@
 ---
+sidebar_position: 6
 id: torque-curves
 title: Torque Curves
-sidebar_label: Torque Curves
+sidebar_label: Torque curves
 description: Torque Curves documentation for Alto Motors.
 ---
 

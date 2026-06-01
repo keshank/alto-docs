@@ -1,4 +1,5 @@
 ---
+sidebar_position: 4
 id: modbus
 title: Modbus
 sidebar_label: Modbus

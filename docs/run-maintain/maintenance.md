@@ -1,4 +1,5 @@
 ---
+sidebar_position: 2
 id: maintenance
 title: Maintenance
 sidebar_label: Maintenance

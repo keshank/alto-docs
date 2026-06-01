@@ -1,7 +1,8 @@
 ---
+sidebar_position: 4
 id: fault-codes
 title: Fault Codes
-sidebar_label: Fault Codes
+sidebar_label: Fault codes
 description: Fault Codes documentation for Alto Motors.
 ---
 

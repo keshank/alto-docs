@@ -1,4 +1,5 @@
 ---
+sidebar_position: 1
 id: quickstart
 title: How to install your first motor
 sidebar_label: Quickstart
@@ -10,7 +11,7 @@ tags: [beginner, installation, bldc, induction]
 
 A 30-minute walkthrough from unboxing to first spin.
 
-**Reading time:** 5 min · **Difficulty:** Easy · **Updated:** May 2026
+<DocMeta difficulty="Easy" readTime="5 min read" updated="May 2026" />
 
 ---
 
@@ -61,14 +62,14 @@ Do not mount with the cable exit pointing upward — water ingress can occur eve
 
 With the supply **disconnected**, land the three phase conductors on the driver's motor block:
 
-| Driver terminal | Motor wire | Function |
+| Driver terminal | Motor wire colour | Function |
 |----------------|------------|----------|
-| `U` | Yellow | Phase A |
-| `V` | Green | Phase B |
-| `W` | Blue | Phase C |
-| `PE` | Green/Yellow | Frame ground |
+| `U` | <Swatch color="#E0B100">Yellow</Swatch> | Phase A |
+| `V` | <Swatch color="#2a8a3e">Green</Swatch> | Phase B |
+| `W` | <Swatch color="#2d6fc8">Blue</Swatch> | Phase C |
+| `PE` | <Swatch color="#2a8a3e" color2="#E0B100">Green / yellow</Swatch> | Frame ground |
 
-:::danger Ground bond required
+:::danger[Ground bond required]
 The motor frame **must** be bonded to `PE` before applying DC bus power. An ungrounded frame can carry up to 50 V of induced potential.
 :::
 
@@ -78,14 +79,14 @@ The motor frame **must** be bonded to `PE` before applying DC bus power. An ungr
 
 The five Hall wires land on the `HALL` connector:
 
-```
-# pin → motor wire
-+5V  → red
-GND  → black
-HA   → yellow
-HB   → green
-HC   → blue
-```
+<Code title="hall-pinout.txt">
+<Line><C c="muted"># Driver pin → motor wire</C></Line>
+<Line><C c="coral">+5V</C>{"  → "}<C c="gold">red</C></Line>
+<Line><C c="coral">GND</C>{"  → "}<C c="gold">black</C></Line>
+<Line><C c="coral">HA</C>{"   → "}<C c="gold">yellow</C></Line>
+<Line><C c="coral">HB</C>{"   → "}<C c="gold">green</C></Line>
+<Line><C c="coral">HC</C>{"   → "}<C c="gold">blue</C></Line>
+</Code>
 
 ---
 

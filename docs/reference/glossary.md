@@ -1,4 +1,5 @@
 ---
+sidebar_position: 4
 id: glossary
 title: Glossary
 sidebar_label: Glossary

@@ -1,4 +1,5 @@
 ---
+sidebar_position: 1
 id: overview
 title: Motors overview
 sidebar_label: Overview

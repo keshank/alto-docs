@@ -1,7 +1,8 @@
 ---
+sidebar_position: 2
 id: drv-bl300
 title: Drv Bl300
-sidebar_label: Drv Bl300
+sidebar_label: DRV-BL300
 description: Drv Bl300 documentation for Alto Motors.
 ---
 
