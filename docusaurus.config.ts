@@ -85,6 +85,10 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
+          // Don't publish CLAUDE.md / AGENTS.md or any other agent rule files
+          // that happen to live inside docs/ — they're authoring instructions,
+          // not reader-facing pages.
+          exclude: ['**/CLAUDE.md', '**/AGENTS.md', '**/.claude/**'],
           // No "Edit this page" link — suggestions go through the in-page
           // "Suggest an edit" form in the right-hand TOC instead.
           showLastUpdateTime: false,

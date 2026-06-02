@@ -22,6 +22,10 @@ const DOCS_DIR = path.join(process.cwd(), 'docs');
 const ROUTE_BASE = '/docs';
 const NO_POSITION = Number.MAX_SAFE_INTEGER;
 
+// Files that live in docs/ but are NOT reader-facing pages. Kept in sync with
+// the `exclude` list in docusaurus.config.ts → presets.classic.docs.exclude.
+const NON_PAGE_FILES = new Set(['CLAUDE.md', 'AGENTS.md']);
+
 export interface NavLeaf {
   label: string;
   href: string;
@@ -79,7 +83,7 @@ interface RankedLeaf extends NavLeaf {
 function listDocs(absDir: string, relDir: string): RankedLeaf[] {
   const files = fs
     .readdirSync(absDir)
-    .filter((f) => /\.mdx?$/.test(f) && !f.startsWith('_'));
+    .filter((f) => /\.mdx?$/.test(f) && !f.startsWith('_') && !NON_PAGE_FILES.has(f));
   const leaves = files.map((f) => {
     const fm = parseFrontmatter(path.join(absDir, f));
     const base = f.replace(/\.mdx?$/, '');
