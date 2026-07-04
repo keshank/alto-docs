@@ -26,6 +26,11 @@ const NO_POSITION = Number.MAX_SAFE_INTEGER;
 // the `exclude` list in docusaurus.config.ts → presets.classic.docs.exclude.
 const NON_PAGE_FILES = new Set(['CLAUDE.md', 'AGENTS.md']);
 
+// Mirror Docusaurus' own `draft` handling: draft pages are served in dev but
+// excluded from the production build. So in production we must also drop them
+// from the nav, or the navbar/drawer would link to a page that doesn't exist.
+const EXCLUDE_DRAFTS = process.env.NODE_ENV === 'production';
+
 export interface NavLeaf {
   label: string;
   href: string;
@@ -54,6 +59,7 @@ interface Frontmatter {
   sidebar_position?: number;
   id?: string;
   nav_tag?: string;
+  draft?: boolean;
 }
 
 function parseFrontmatter(file: string): Frontmatter {
@@ -71,6 +77,7 @@ function parseFrontmatter(file: string): Frontmatter {
     else if (key === 'sidebar_label') fm.sidebar_label = val;
     else if (key === 'id') fm.id = val;
     else if (key === 'nav_tag') fm.nav_tag = val;
+    else if (key === 'draft') fm.draft = val === 'true';
   }
   return fm;
 }
@@ -84,8 +91,11 @@ function listDocs(absDir: string, relDir: string): RankedLeaf[] {
   const files = fs
     .readdirSync(absDir)
     .filter((f) => /\.mdx?$/.test(f) && !f.startsWith('_') && !NON_PAGE_FILES.has(f));
-  const leaves = files.map((f) => {
-    const fm = parseFrontmatter(path.join(absDir, f));
+  const leaves = files
+    .map((f) => ({f, fm: parseFrontmatter(path.join(absDir, f))}))
+    // Drop drafts in production so the nav never links to an unbuilt page.
+    .filter(({fm}) => !(EXCLUDE_DRAFTS && fm.draft))
+    .map(({f, fm}) => {
     const base = f.replace(/\.mdx?$/, '');
     const seg = fm.id || base;
     const href = `${ROUTE_BASE}${relDir ? `/${relDir}` : ''}/${seg}`;

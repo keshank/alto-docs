@@ -4,7 +4,13 @@ sidebar_label: Style reference
 sidebar_position: 99
 description: Every styled element available in Alto docs, in one place. Copy from here when writing a new page.
 tags: [reference, style]
+draft: true
 ---
+
+{/* draft: true keeps this style reference OUT of the public build (npm run
+     build): no page, no sidebar entry, no search, no reachable URL. It STILL
+     shows in local dev (npm run start) so you can refer to it while writing.
+     To publish it one day, delete the `draft: true` line. */}
 
 # Style reference
 
